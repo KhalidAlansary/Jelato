@@ -4,10 +4,12 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "serve out",
-    "lint": "next lint"
+    "lint": "next lint",
+    "gen-types": "supabase gen types typescript --project-id aekbyvvqvfkyowejszpb > src/utils/supabase/database.types.ts"
   },
   "type": "module",
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
     "next": "15.2.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
@@ -23,6 +25,7 @@
     "eslint-config-next": "15.2.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "serve": "^14.2.4",
+    "supabase": "^2.20.12",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
