@@ -24,6 +24,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.2.5",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "prettier": "^3.5.3",
     "serve": "^14.2.4",
     "supabase": "^2.20.12",
     "tailwindcss": "^4",
