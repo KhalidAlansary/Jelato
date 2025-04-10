@@ -5,6 +5,7 @@
     "build": "next build",
     "start": "serve out",
     "lint": "next lint",
+    "format": "prettier --write .",
     "gen-types": "supabase gen types typescript --project-id aekbyvvqvfkyowejszpb > src/utils/supabase/database.types.ts"
   },
   "engines": {
