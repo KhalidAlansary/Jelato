@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Search, Wallet } from "lucide-react";
 import Link from "next/link";
+import { ModeToggle } from "./mode-toggle";
 
 export function Navigation() {
   return (
@@ -84,6 +85,7 @@ export function Navigation() {
               View Wallet
             </Button>
           </Link>
+          <ModeToggle />
         </div>
       </div>
     </header>
