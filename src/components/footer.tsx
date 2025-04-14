@@ -1,6 +1,10 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Github, Twitter, DiscIcon as Discord } from "lucide-react";
+import {
+  SiGithub as Github,
+  SiX as Twitter,
+  SiDiscord as Discord,
+} from "@icons-pack/react-simple-icons";
 
 export function Footer() {
   return (
