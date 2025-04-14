@@ -16,14 +16,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Run Prettier
         id: prettier-run
-        uses: rutajdash/prettier-cli-action@v1.0.0
-        with:
-          config_path: ./.prettierrc
-
-      - name: Prettier Output
-        if: ${{ failure() }}
-        run: |
-          echo "The following files are not formatted:"
-          echo "${{steps.prettier-run.outputs.prettier_output}}"
+        run: pnpm dlx prettier --check .
