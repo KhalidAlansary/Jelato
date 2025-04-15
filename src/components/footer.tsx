@@ -107,7 +107,7 @@ export function Footer() {
         </div>
         <div className="mt-10 border-t pt-8 text-center">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} PromptMarket. All rights reserved.
+            © {new Date().getFullYear()} Jelato. All rights reserved.
           </p>
         </div>
       </div>

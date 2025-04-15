@@ -1,11 +1,11 @@
 import { Hero } from "@/components/hero";
-import { FeaturedPrompts } from "@/components/featured-prompts";
+import { FeaturedFlavours as FeaturedFlavours } from "@/components/featured-flavours";
 
 export default function Home() {
   return (
     <main className="flex-1">
       <Hero />
-      <FeaturedPrompts />
+      <FeaturedFlavours />
     </main>
   );
 }

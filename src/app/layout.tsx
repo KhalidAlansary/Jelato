@@ -10,9 +10,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AI Prompt Marketplace",
-  description: "Buy and sell AI prompts securely on the blockchain",
-  generator: "v0.dev",
+  title: "Ice Cream Flavours Marketplace",
+  description: "Buy and sell ice cream flavours smoothly",
 };
 
 export default function RootLayout({

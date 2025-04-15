@@ -8,21 +8,21 @@ export function Hero() {
       <div className="relative mx-auto max-w-5xl px-6 py-24 sm:py-32 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-            Buy and Sell AI Prompts Securely on the Blockchain
+            Buy and Sell Ice Cream Flavours Smoothly
           </h1>
           <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            Discover high-quality AI prompts, sell your own creations, and join
-            a thriving community of prompt engineers.
+            Discover delicious artisanal ice cream flavors, sell your own
+            creations, and join a thriving community of ice cream enthusiasts.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Link href="/browse">
               <Button size="lg" className="rounded-full">
-                Browse Prompts
+                Browse Flavours
               </Button>
             </Link>
             <Link href="/sell">
               <Button size="lg" variant="outline" className="rounded-full">
-                Sell Prompts
+                Sell Flavours
               </Button>
             </Link>
           </div>

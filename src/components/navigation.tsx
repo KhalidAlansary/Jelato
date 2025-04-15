@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Search, Wallet } from "lucide-react";
+import { Menu, Search, Wallet, IceCreamCone } from "lucide-react";
 import Link from "next/link";
 import { ModeToggle } from "./mode-toggle";
 
@@ -10,10 +10,12 @@ export function Navigation() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <div className="mr-4 hidden md:flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <span className="hidden font-bold sm:inline-block">
-              PromptMarket
-            </span>
+          <Link
+            href="/"
+            className="mr-6 flex items-center space-x-2 text-primary"
+          >
+            <IceCreamCone className="h-6 w-6" />
+            <span className="hidden font-bold sm:inline-block">Jelato</span>
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
             <Link
@@ -73,7 +75,7 @@ export function Navigation() {
           <div className="relative">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search prompts..."
+              placeholder="Search Flavours..."
               className="pl-8 md:w-[300px] lg:w-[400px]"
             />
           </div>
