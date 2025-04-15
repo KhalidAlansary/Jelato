@@ -1,5 +1,7 @@
 import { colors } from "./src/lib/colors";
 
+import animate from "tailwindcss-animate";
+
 /** @type {import('tailwindcss').Config} */
 const config = {
   darkMode: ["class"],
@@ -76,7 +78,7 @@ const config = {
       },
     },
   },
-  plugins: [],
+  plugins: [animate],
 };
 
 export default config;

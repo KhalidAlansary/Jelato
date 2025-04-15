@@ -50,6 +50,7 @@
     "serve": "^14.2.4",
     "supabase": "^2.20.12",
     "tailwindcss": "^4.1.4",
+    "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.8.3"
   }
 }
