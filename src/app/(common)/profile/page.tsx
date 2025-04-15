@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { StarIcon, Wallet, History, Settings } from "lucide-react";
+import { StarIcon, IceCream, History, Settings } from "lucide-react";
 
 export default function ProfilePage() {
   return (
@@ -16,7 +16,7 @@ export default function ProfilePage() {
           <AvatarFallback>JD</AvatarFallback>
         </Avatar>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold">John.eth</h1>
+          <h1 className="text-3xl font-bold">John&apos;s Ice Cream</h1>
           <p className="text-muted-foreground">Joined December 2023</p>
           <div className="flex items-center gap-2 mt-2">
             <StarIcon className="h-4 w-4 fill-yellow-500 text-yellow-500" />
@@ -30,7 +30,7 @@ export default function ProfilePage() {
       <Tabs defaultValue="activity">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="activity">Activity</TabsTrigger>
-          <TabsTrigger value="wallet">Wallet</TabsTrigger>
+          <TabsTrigger value="favorites">Favorites</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
@@ -49,24 +49,24 @@ export default function ProfilePage() {
                   <div className="flex justify-between items-center py-2 border-b">
                     <div>
                       <p className="font-medium">
-                        Purchased &quot;SEO Content Optimizer&quot;
+                        Purchased &quot;Choco Lava Delight&quot;
                       </p>
                       <p className="text-sm text-muted-foreground">
                         2 days ago
                       </p>
                     </div>
-                    <Badge>0.08 ETH</Badge>
+                    <Badge>$5.99</Badge>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b">
                     <div>
                       <p className="font-medium">
-                        Sold &quot;Creative Story Generator&quot;
+                        Reviewed &quot;Berry Bliss&quot;
                       </p>
                       <p className="text-sm text-muted-foreground">
                         5 days ago
                       </p>
                     </div>
-                    <Badge>0.1 ETH</Badge>
+                    <Badge>5 Stars</Badge>
                   </div>
                 </div>
               </CardContent>
@@ -74,27 +74,34 @@ export default function ProfilePage() {
           </div>
         </TabsContent>
 
-        <TabsContent value="wallet" className="mt-6">
+        <TabsContent value="favorites" className="mt-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Wallet className="h-5 w-5" />
-                Wallet Details
+                <IceCream className="h-5 w-5" />
+                Favorite Flavours
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                <div>
-                  <p className="text-sm text-muted-foreground">
-                    Connected Wallet
-                  </p>
-                  <p className="font-mono">0x1234...5678</p>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-2 border-b">
+                  <div>
+                    <p className="font-medium">Choco Lava Delight</p>
+                    <p className="text-sm text-muted-foreground">
+                      Rich chocolate ice cream with a molten fudge core.
+                    </p>
+                  </div>
+                  <Badge>Chocolate</Badge>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Balance</p>
-                  <p className="text-2xl font-bold">2.5 ETH</p>
+                <div className="flex justify-between items-center py-2 border-b">
+                  <div>
+                    <p className="font-medium">Minty Wonderland</p>
+                    <p className="text-sm text-muted-foreground">
+                      Cool mint ice cream with dark chocolate chips.
+                    </p>
+                  </div>
+                  <Badge>Mint</Badge>
                 </div>
-                <Button className="w-full">Withdraw Funds</Button>
               </div>
             </CardContent>
           </Card>
@@ -115,7 +122,7 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     className="w-full mt-1 px-3 py-2 border rounded-md"
-                    defaultValue="John.eth"
+                    defaultValue="John's Ice Cream"
                   />
                 </div>
                 <div>
@@ -125,7 +132,7 @@ export default function ProfilePage() {
                   <div className="mt-2 space-y-2">
                     <label className="flex items-center gap-2">
                       <input type="checkbox" defaultChecked />
-                      <span>New prompt purchases</span>
+                      <span>New flavour releases</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" defaultChecked />

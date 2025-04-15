@@ -10,68 +10,66 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { StarIcon } from "lucide-react";
 
-const featuredPrompts = [
+const featuredFlavours = [
   {
     id: 1,
-    title: "Creative Story Generator",
+    title: "Choco Lava Delight",
     description:
-      "Generate engaging short stories with complex characters and plot twists.",
-    price: "0.1 ETH",
-    category: "Creative Writing",
-    rating: 4.8,
-  },
-  {
-    id: 2,
-    title: "SEO Content Optimizer",
-    description:
-      "Create SEO-optimized content that ranks well on search engines.",
-    price: "0.08 ETH",
-    category: "Marketing",
+      "Rich chocolate ice cream with a molten fudge core and brownie chunks.",
+    price: "$5.99",
+    category: "Chocolate",
     rating: 4.9,
   },
   {
-    id: 3,
-    title: "Code Refactoring Assistant",
+    id: 2,
+    title: "Berry Bliss",
     description:
-      "Improve your code quality with smart refactoring suggestions.",
-    price: "0.15 ETH",
-    category: "Programming",
-    rating: 4.7,
+      "A refreshing mix of strawberry, blueberry, and raspberry swirls.",
+    price: "$4.99",
+    category: "Fruity",
+    rating: 4.8,
+  },
+  {
+    id: 3,
+    title: "Tropical Paradise",
+    description: "A tropical blend of mango, pineapple, and coconut flavors.",
+    price: "$5.49",
+    category: "Tropical",
+    rating: 4.6,
   },
 ];
-
-export function FeaturedPrompts() {
+export function FeaturedFlavours() {
   return (
     <section className="py-16 px-6">
       <div className="mx-auto max-w-7xl">
         <h2 className="text-3xl font-bold tracking-tight text-center mb-12">
-          Featured Prompts
+          Featured Flavours
         </h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredPrompts.map((prompt) => (
+          {featuredFlavours.map((flavour) => (
             <Card
-              key={prompt.id}
+              key={flavour.id}
               className="group relative overflow-hidden transition-all hover:shadow-lg"
             >
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div>
-                    <CardTitle>{prompt.title}</CardTitle>
+                    <CardTitle>{flavour.title}</CardTitle>
                     <CardDescription className="mt-2">
-                      {prompt.description}
+                      {flavour.description}
                     </CardDescription>
                   </div>
-                  <Badge variant="secondary">{prompt.category}</Badge>
+                  <Badge variant="secondary">{flavour.category}</Badge>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-1 text-yellow-500">
                   <StarIcon className="h-4 w-4 fill-current" />
-                  <span className="text-sm font-medium">{prompt.rating}</span>
+                  <span className="text-sm font-medium">{flavour.rating}</span>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between items-center">
-                <span className="text-lg font-bold">{prompt.price}</span>
+                <span className="text-lg font-bold">{flavour.price}</span>
                 <Button>Buy Now</Button>
               </CardFooter>
             </Card>

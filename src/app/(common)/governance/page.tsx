@@ -75,7 +75,7 @@ export default function GovernancePage() {
                   <div>
                     <CardTitle>Dispute #123</CardTitle>
                     <p className="text-sm text-muted-foreground mt-2">
-                      Buyer claims the prompt quality doesn&apos;t match the
+                      Buyer claims the flavour quality doesn&apos;t match the
                       description.
                     </p>
                   </div>

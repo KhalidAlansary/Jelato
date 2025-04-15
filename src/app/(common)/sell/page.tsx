@@ -20,24 +20,24 @@ export default function SellPage() {
     <div className="max-w-4xl mx-auto">
       <Tabs defaultValue="new">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="new">New Prompt</TabsTrigger>
+          <TabsTrigger value="new">New Flavour</TabsTrigger>
           <TabsTrigger value="listings">My Listings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="new" className="mt-6">
           <Card>
             <CardHeader>
-              <CardTitle>List a New Prompt</CardTitle>
+              <CardTitle>List a New Flavour</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Title</label>
-                <Input placeholder="Enter prompt title" />
+                <Input placeholder="Enter flavour title" />
               </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Description</label>
-                <Textarea placeholder="Describe your prompt..." />
+                <Textarea placeholder="Describe your flavour..." />
               </div>
 
               <div className="space-y-2">
@@ -70,18 +70,18 @@ export default function SellPage() {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">
-                  Upload Prompt File
+                  Upload Flavour File
                 </label>
                 <div className="border-2 border-dashed rounded-lg p-6 text-center">
                   <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Drag and drop your prompt file here, or click to browse
+                    Drag and drop your flavour file here, or click to browse
                   </p>
                   <Input type="file" className="hidden" />
                 </div>
               </div>
 
-              <Button className="w-full">Submit Prompt</Button>
+              <Button className="w-full">Submit Flavour</Button>
             </CardContent>
           </Card>
         </TabsContent>
