@@ -1,7 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Search, Wallet, IceCreamCone } from "lucide-react";
+import {
+  Menu,
+  Search,
+  Wallet,
+  IceCreamCone,
+  LogIn,
+  UserPlus,
+} from "lucide-react";
 import Link from "next/link";
 import { ModeToggle } from "./mode-toggle";
 
@@ -85,6 +92,21 @@ export function Navigation() {
             <Button variant="outline" className="ml-auto hidden md:flex">
               <Wallet className="mr-2 h-4 w-4" />
               View Wallet
+            </Button>
+          </Link>
+          <Button variant="ghost" className="justify-start px-2">
+            Logout
+          </Button>
+          <Link href="/login">
+            <Button variant="ghost" className="hidden md:flex">
+              <LogIn className="mr-2 h-4 w-4" />
+              Login
+            </Button>
+          </Link>
+          <Link href="/signup">
+            <Button variant="outline" className="hidden md:flex">
+              <UserPlus className="mr-2 h-4 w-4" />
+              Sign Up
             </Button>
           </Link>
           <ModeToggle />
