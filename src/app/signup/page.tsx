@@ -18,11 +18,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 
+import supabase from "@/utils/supabase/client";
+
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordError, setPasswordError] = useState("");
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function validatePassword(password: string, confirmPassword: string) {
     if (password !== confirmPassword) {
       setPasswordError("Passwords do not match");
@@ -36,6 +37,31 @@ export default function SignupPage() {
     return true;
   }
 
+  async function handleSubmit(formData: FormData) {
+    const email = formData.get("email")?.toString();
+    const password = formData.get("password")?.toString();
+    const confirmPassword = formData.get("confirmPassword")?.toString();
+
+    if (!email || !password || !confirmPassword) {
+      console.error("All fields are required");
+      return;
+    }
+
+    if (!validatePassword(password, confirmPassword)) {
+      return;
+    }
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      console.error("Error signing up:", error);
+      return;
+    }
+  }
+
   return (
     <main className="flex-1 flex items-center justify-center p-6">
       <Card className="w-full max-w-md">
@@ -47,17 +73,14 @@ export default function SignupPage() {
             Enter your information to create your account
           </CardDescription>
         </CardHeader>
-        <form>
+        <form action={handleSubmit}>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input id="username" placeholder="johndoe" required />
-            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
+                name="email"
                 placeholder="name@example.com"
                 required
               />
@@ -68,6 +91,7 @@ export default function SignupPage() {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
+                  name="password"
                   placeholder="••••••••"
                   required
                 />
@@ -94,6 +118,7 @@ export default function SignupPage() {
               <Input
                 id="confirmPassword"
                 type={showPassword ? "text" : "password"}
+                name="confirmPassword"
                 placeholder="••••••••"
                 required
               />

@@ -12,7 +12,14 @@ import {
 import Link from "next/link";
 import { ModeToggle } from "./mode-toggle";
 
-export function Navigation() {
+import supabase from "@/utils/supabase/client";
+
+export async function Navigation() {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isLoggedIn = user !== null;
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
@@ -88,27 +95,34 @@ export function Navigation() {
           </div>
         </div>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <Link href="/wallet" className="hidden md:flex">
-            <Button variant="outline" className="ml-auto hidden md:flex">
-              <Wallet className="mr-2 h-4 w-4" />
-              View Wallet
-            </Button>
-          </Link>
-          <Button variant="ghost" className="justify-start px-2">
-            Logout
-          </Button>
-          <Link href="/login">
-            <Button variant="ghost" className="hidden md:flex">
-              <LogIn className="mr-2 h-4 w-4" />
-              Login
-            </Button>
-          </Link>
-          <Link href="/signup">
-            <Button variant="outline" className="hidden md:flex">
-              <UserPlus className="mr-2 h-4 w-4" />
-              Sign Up
-            </Button>
-          </Link>
+          {isLoggedIn ? (
+            <>
+              <Link href="/wallet" className="hidden md:flex">
+                <Button variant="outline" className="ml-auto hidden md:flex">
+                  <Wallet className="mr-2 h-4 w-4" />
+                  View Wallet
+                </Button>
+              </Link>
+              <Button variant="ghost" className="justify-start px-2">
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link href="/login">
+                <Button variant="ghost" className="hidden md:flex">
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Login
+                </Button>
+              </Link>
+              <Link href="/signup">
+                <Button variant="outline" className="hidden md:flex">
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Sign Up
+                </Button>
+              </Link>
+            </>
+          )}
           <ModeToggle />
         </div>
       </div>
