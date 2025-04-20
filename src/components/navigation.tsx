@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -12,13 +14,19 @@ import {
 import Link from "next/link";
 import { ModeToggle } from "./mode-toggle";
 
+import { useQuery } from "@tanstack/react-query";
 import supabase from "@/utils/supabase/client";
 
-export async function Navigation() {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const isLoggedIn = user !== null;
+export function Navigation() {
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      return session?.user || null;
+    },
+  });
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -95,7 +103,9 @@ export async function Navigation() {
           </div>
         </div>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          {isLoggedIn ? (
+          {isLoading ? (
+            <div className="h-9 w-9 animate-pulse rounded-full bg-muted"></div>
+          ) : user ? (
             <>
               <Link href="/wallet" className="hidden md:flex">
                 <Button variant="outline" className="ml-auto hidden md:flex">
