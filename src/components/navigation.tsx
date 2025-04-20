@@ -14,10 +14,15 @@ import {
 import Link from "next/link";
 import { ModeToggle } from "./mode-toggle";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import supabase from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export function Navigation() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
   const { data: user, isLoading } = useQuery({
     queryKey: ["user"],
     queryFn: async () => {
@@ -27,6 +32,21 @@ export function Navigation() {
       return session?.user || null;
     },
   });
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      queryClient.setQueryData(["user"], session?.user || null);
+    });
+
+    return subscription.unsubscribe;
+  }, [queryClient]);
+
+  async function signout() {
+    await supabase.auth.signOut();
+    router.push("/");
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -113,8 +133,12 @@ export function Navigation() {
                   View Wallet
                 </Button>
               </Link>
-              <Button variant="ghost" className="justify-start px-2">
-                Logout
+              <Button
+                variant="ghost"
+                className="justify-start px-2"
+                onClick={signout}
+              >
+                Sign Out
               </Button>
             </>
           ) : (
