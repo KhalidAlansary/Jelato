@@ -14,34 +14,13 @@ import {
 import Link from "next/link";
 import { ModeToggle } from "./mode-toggle";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import supabase from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export function Navigation() {
   const router = useRouter();
-  const queryClient = useQueryClient();
-
-  const { data: user, isLoading } = useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      return session?.user || null;
-    },
-  });
-
-  useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      queryClient.setQueryData(["user"], session?.user || null);
-    });
-
-    return subscription.unsubscribe;
-  }, [queryClient]);
+  const { user, isLoading } = useAuth();
 
   async function signout() {
     await supabase.auth.signOut();
