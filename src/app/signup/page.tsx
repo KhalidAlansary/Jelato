@@ -82,6 +82,7 @@ export default function SignupPage() {
                 type="email"
                 name="email"
                 placeholder="name@example.com"
+                autoComplete="email"
                 required
               />
             </div>
@@ -93,6 +94,7 @@ export default function SignupPage() {
                   type={showPassword ? "text" : "password"}
                   name="password"
                   placeholder="••••••••"
+                  autoComplete="new-password"
                   required
                 />
                 <Button
@@ -120,6 +122,7 @@ export default function SignupPage() {
                 type={showPassword ? "text" : "password"}
                 name="confirmPassword"
                 placeholder="••••••••"
+                autoComplete="new-password"
                 required
               />
               {passwordError && (
