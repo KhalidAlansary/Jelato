@@ -17,33 +17,42 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import supabase from "@/utils/supabase/client";
+import { useForm } from "react-hook-form";
+
+const schema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+type FormFields = z.infer<typeof schema>;
 
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<FormFields>({
+    resolver: zodResolver(schema),
+  });
 
-  async function handleSubmit(formData: FormData) {
-    const email = formData.get("email")?.toString();
-    const password = formData.get("password")?.toString();
-
-    if (!email || !password) {
-      console.error("All fields are required");
-      return;
-    }
-
+  async function onSubmit({ email, password }: FormFields) {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
-      setError(error.message);
-      return;
+      setError("root", { message: error.message });
+    } else {
+      router.push("/profile");
     }
-    router.push("/profile");
   }
 
   return (
@@ -57,18 +66,23 @@ export default function LoginPage() {
             Enter your credentials to access your account
           </CardDescription>
         </CardHeader>
-        <form action={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
-                name="email"
                 placeholder="name@example.com"
                 autoComplete="email"
                 required
+                {...register("email")}
               />
+              {errors.email && (
+                <p className="text-sm text-destructive">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -76,17 +90,17 @@ export default function LoginPage() {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  name="password"
                   placeholder="••••••••"
                   autoComplete="current-password"
                   required
+                  {...register("password")}
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
                   className="absolute right-0 top-0 h-full px-3 py-2 text-muted-foreground"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setShowPassword((prev) => !prev)}
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -97,6 +111,11 @@ export default function LoginPage() {
                     {showPassword ? "Hide password" : "Show password"}
                   </span>
                 </Button>
+                {errors.password && (
+                  <p className="text-sm text-destructive">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -108,11 +127,13 @@ export default function LoginPage() {
                 Remember me
               </Label>
             </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {errors.root && (
+              <p className="text-sm text-destructive">{errors.root.message}</p>
+            )}
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Logging in..." : "Login"}
             </Button>
             <div className="text-center text-sm">
               Don&apos;t have an account?{" "}

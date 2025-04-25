@@ -17,48 +17,44 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import supabase from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
+
+const schema = z
+  .object({
+    email: z.string().email(),
+    password: z.string().min(8),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
+type FormFields = z.infer<typeof schema>;
 
 export default function SignupPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState("");
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<FormFields>({
+    resolver: zodResolver(schema),
+  });
 
-  function validatePassword(password: string, confirmPassword: string) {
-    if (password !== confirmPassword) {
-      setPasswordError("Passwords do not match");
-      return false;
-    }
-    if (password.length < 8) {
-      setPasswordError("Password must be at least 8 characters");
-      return false;
-    }
-    setPasswordError("");
-    return true;
-  }
-
-  async function handleSubmit(formData: FormData) {
-    const email = formData.get("email")?.toString();
-    const password = formData.get("password")?.toString();
-    const confirmPassword = formData.get("confirmPassword")?.toString();
-
-    if (!email || !password || !confirmPassword) {
-      console.error("All fields are required");
-      return;
-    }
-
-    if (!validatePassword(password, confirmPassword)) {
-      return;
-    }
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
+  async function onSubmit({ email, password }: FormFields) {
+    const { error } = await supabase.auth.signUp({ email, password });
     if (error) {
-      console.error("Error signing up:", error);
-      return;
+      setError("root", { message: error.message });
+    } else {
+      router.push("/");
     }
   }
 
@@ -73,18 +69,23 @@ export default function SignupPage() {
             Enter your information to create your account
           </CardDescription>
         </CardHeader>
-        <form action={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
-                name="email"
-                placeholder="name@example.com"
                 autoComplete="email"
+                placeholder="name@example.com"
                 required
+                {...register("email")}
               />
+              {errors.email && (
+                <p className="text-sm text-destructive">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -92,10 +93,10 @@ export default function SignupPage() {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  name="password"
                   placeholder="••••••••"
                   autoComplete="new-password"
                   required
+                  {...register("password")}
                 />
                 <Button
                   type="button"
@@ -114,19 +115,26 @@ export default function SignupPage() {
                   </span>
                 </Button>
               </div>
+              {errors.password && (
+                <p className="text-sm text-destructive">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
               <Input
                 id="confirmPassword"
                 type={showPassword ? "text" : "password"}
-                name="confirmPassword"
                 placeholder="••••••••"
                 autoComplete="new-password"
                 required
+                {...register("confirmPassword")}
               />
-              {passwordError && (
-                <p className="text-sm text-destructive">{passwordError}</p>
+              {errors.confirmPassword && (
+                <p className="text-sm text-destructive">
+                  {errors.confirmPassword.message}
+                </p>
               )}
             </div>
             <div className="flex items-center space-x-2">
@@ -152,9 +160,14 @@ export default function SignupPage() {
               </Label>
             </div>
           </CardContent>
+          {errors.root && (
+            <p className="px-6 text-sm text-destructive">
+              {errors.root.message}
+            </p>
+          )}
           <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full">
-              Create account
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Creating account..." : "Create account"}
             </Button>
             <div className="text-center text-sm">
               Already have an account?{" "}
