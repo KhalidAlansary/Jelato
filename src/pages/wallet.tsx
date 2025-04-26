@@ -1,9 +1,8 @@
 "use client";
 
-import type React from "react";
-
+import { ProtectedRoute } from "@/components/protected-route";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -12,7 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Wallet,
   ArrowUpRight,
@@ -20,8 +20,7 @@ import {
   Plus,
   History,
 } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { ProtectedRoute } from "@/components/protected-route";
+import type React from "react";
 
 export default function WalletPage() {
   return (

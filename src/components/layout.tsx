@@ -1,8 +1,8 @@
-import type React from "react";
-import { Navigation } from "./navigation";
 import { Footer } from "./footer";
+import { Navigation } from "./navigation";
 import { Providers } from "./providers";
 import Head from "next/head";
+import type React from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

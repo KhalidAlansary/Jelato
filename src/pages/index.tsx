@@ -1,5 +1,5 @@
+import { FeaturedFlavours } from "@/components/featured-flavours";
 import { Hero } from "@/components/hero";
-import { FeaturedFlavours as FeaturedFlavours } from "@/components/featured-flavours";
 
 export default function Home() {
   return (

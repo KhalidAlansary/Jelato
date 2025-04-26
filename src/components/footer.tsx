@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import {
   SiGithub as Github,
   SiX as Twitter,
   SiDiscord as Discord,
 } from "@icons-pack/react-simple-icons";
+import Link from "next/link";
 
 export function Footer() {
   return (

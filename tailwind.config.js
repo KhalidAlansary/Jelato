@@ -1,5 +1,4 @@
 import { colors } from "./src/lib/colors";
-
 import animate from "tailwindcss-animate";
 
 /** @type {import('tailwindcss').Config} */

@@ -1,5 +1,6 @@
 "use client";
 
+import { ModeToggle } from "./mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -9,6 +10,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useAuth } from "@/hooks/useAuth";
+import supabase from "@/utils/supabase/client";
 import {
   Menu,
   Search,
@@ -18,11 +21,7 @@ import {
   UserPlus,
 } from "lucide-react";
 import Link from "next/link";
-import { ModeToggle } from "./mode-toggle";
-
-import supabase from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/useAuth";
 
 export function Navigation() {
   const router = useRouter();

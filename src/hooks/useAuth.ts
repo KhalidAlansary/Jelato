@@ -1,5 +1,5 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import supabase from "@/utils/supabase/client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 export function useAuth() {
