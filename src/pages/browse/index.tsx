@@ -19,9 +19,10 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { StarIcon, Filter } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
-const flavours = [
+export const flavours = [
   {
     id: 1,
     title: "Choco Lava Delight",
@@ -150,7 +151,9 @@ export default function BrowsePage() {
                 </CardContent>
                 <CardFooter className="flex justify-between items-center">
                   <span className="text-lg font-bold">${flavour.price}</span>
-                  <Button>View Details</Button>
+                  <Link href={`/browse/${flavour.id}`}>
+                    <Button className="cursor-pointer">View Details</Button>
+                  </Link>
                 </CardFooter>
               </Card>
             ))}
