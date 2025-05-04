@@ -32,6 +32,7 @@ export const flavours = [
     category: "Chocolate",
     rating: 4.9,
     seller: "SweetTreats",
+    image: "https://via.placeholder.com/400x160?text=Choco+Lava+Delight",
   },
   {
     id: 2,
@@ -42,6 +43,7 @@ export const flavours = [
     category: "Fruity",
     rating: 4.8,
     seller: "BerryWorld",
+    image: "https://via.placeholder.com/400x160?text=Berry+Bliss",
   },
   {
     id: 3,
@@ -51,6 +53,7 @@ export const flavours = [
     category: "Tropical",
     rating: 4.6,
     seller: "TropiCool",
+    image: "https://via.placeholder.com/400x160?text=Tropical+Paradise",
   },
   {
     id: 4,
@@ -61,6 +64,7 @@ export const flavours = [
     category: "Caramel",
     rating: 4.8,
     seller: "CaramelKing",
+    image: "https://via.placeholder.com/400x160?text=Caramel+Crunch",
   },
 ];
 
@@ -132,6 +136,13 @@ export default function BrowsePage() {
             {flavours.map((flavour) => (
               <Card key={flavour.id} className="flex flex-col">
                 <CardHeader>
+                  {flavour.image && (
+                    <img
+                      src={flavour.image}
+                      alt={flavour.title}
+                      className="w-full h-40 object-cover rounded-lg mb-4 border"
+                    />
+                  )}
                   <CardTitle className="flex justify-between items-start gap-2">
                     <span>{flavour.title}</span>
                     <Badge variant="secondary">{flavour.category}</Badge>
