@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -13,9 +14,64 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, DollarSign } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import supabase from "@/utils/supabase/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { DollarSign } from "lucide-react";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+
+const schema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  category: z.enum(["chocolate", "fruity", "tropical", "caramel"], {
+    errorMap: () => ({ message: "Please select a valid category" }),
+  }),
+  price: z.coerce.number().min(0.01, "Price must be greater than 0"),
+  imageUrl: z.string().url("Invalid URL"),
+  stock: z.coerce.number().min(1, "Stock must be greater than 0"),
+});
+
+type FormFields = z.infer<typeof schema>;
 
 export default function SellPage() {
+  const { user } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<FormFields>({
+    resolver: zodResolver(schema),
+  });
+
+  async function sell(data: FormFields) {
+    if (!user) {
+      console.error("User not authenticated");
+      return;
+    }
+
+    const { error } = await supabase
+      .schema("listings")
+      .from("listings")
+      .insert({
+        seller_id: user.id,
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        price: data.price,
+        image_url: data.imageUrl,
+        stock: data.stock,
+      });
+
+    if (error) {
+      console.error("Error inserting listing:", error);
+    } else {
+      reset();
+    }
+  }
+
   return (
     <main className="flex-1 container py-8">
       <div className="max-w-4xl mx-auto">
@@ -31,58 +87,142 @@ export default function SellPage() {
                 <CardTitle>List a New Flavour</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Title</label>
-                  <Input placeholder="Enter flavour title" />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Description</label>
-                  <Textarea placeholder="Describe your flavour..." />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Category</label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="creative">Creative Writing</SelectItem>
-                      <SelectItem value="coding">Coding</SelectItem>
-                      <SelectItem value="marketing">Marketing</SelectItem>
-                      <SelectItem value="business">Business</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Price</label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                <form onSubmit={handleSubmit(sell)} className="space-y-6">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium" htmlFor="title">
+                      Title
+                    </Label>
                     <Input
-                      type="number"
-                      placeholder="0.00"
-                      className="pl-9"
-                      step="0.01"
+                      id="title"
+                      placeholder="Enter flavour title"
+                      {...register("title")}
+                      aria-invalid={!!errors.title}
                     />
+                    {errors.title && (
+                      <span className="text-xs text-red-500">
+                        {errors.title.message as string}
+                      </span>
+                    )}
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    Upload Flavour image
-                  </label>
-                  <div className="border-2 border-dashed rounded-lg p-6 text-center">
-                    <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      Drag and drop your flavour file here, or click to browse
-                    </p>
-                    <Input type="file" className="hidden" />
+                  <div className="space-y-2">
+                    <Label
+                      className="text-sm font-medium"
+                      htmlFor="description"
+                    >
+                      Description
+                    </Label>
+                    <Textarea
+                      id="description"
+                      placeholder="Describe your flavour..."
+                      {...register("description")}
+                      aria-invalid={!!errors.description}
+                    />
+                    {errors.description && (
+                      <span className="text-xs text-red-500">
+                        {errors.description.message as string}
+                      </span>
+                    )}
                   </div>
-                </div>
 
-                <Button className="w-full">Submit Flavour</Button>
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium" htmlFor="category">
+                      Category
+                    </Label>
+                    <Controller
+                      name="category"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          defaultValue=""
+                        >
+                          <SelectTrigger
+                            id="category"
+                            aria-invalid={!!errors.category}
+                          >
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="chocolate">Chocolate</SelectItem>
+                            <SelectItem value="fruity">Fruity</SelectItem>
+                            <SelectItem value="tropical">Tropical</SelectItem>
+                            <SelectItem value="caramel">Caramel</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.category && (
+                      <span className="text-xs text-red-500">
+                        {errors.category.message as string}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium" htmlFor="price">
+                      Price
+                    </Label>
+                    <div className="relative">
+                      <DollarSign className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="price"
+                        type="number"
+                        placeholder="0.00"
+                        className="pl-9"
+                        step="0.01"
+                        {...register("price")}
+                        aria-invalid={!!errors.price}
+                      />
+                    </div>
+                    {errors.price && (
+                      <span className="text-xs text-red-500">
+                        {errors.price.message as string}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Image URL</label>
+                    <Input
+                      placeholder="Enter image URL"
+                      {...register("imageUrl")}
+                      aria-invalid={!!errors.imageUrl}
+                    />
+                    {errors.imageUrl && (
+                      <span className="text-xs text-red-500">
+                        {errors.imageUrl.message as string}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium" htmlFor="stock">
+                      Stock
+                    </Label>
+                    <Input
+                      id="stock"
+                      type="number"
+                      placeholder="Enter stock quantity"
+                      {...register("stock")}
+                      aria-invalid={!!errors.stock}
+                    />
+                    {errors.stock && (
+                      <span className="text-xs text-red-500">
+                        {errors.stock.message as string}
+                      </span>
+                    )}
+                  </div>
+
+                  <Button
+                    className="w-full"
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Submitting..." : "Submit Flavour"}
+                  </Button>
+                </form>
               </CardContent>
             </Card>
           </TabsContent>
