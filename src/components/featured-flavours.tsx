@@ -88,7 +88,7 @@ export function FeaturedFlavours() {
               </CardContent>
               <CardFooter className="flex justify-between items-center">
                 <span className="text-lg font-bold">{flavour.price}</span>
-                <Link href={`/product/${flavour.id}`}>
+                <Link href={`/browse/${flavour.id}`}>
                   <Button>View Details</Button>
                 </Link>
               </CardFooter>
