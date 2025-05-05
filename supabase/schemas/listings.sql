@@ -67,12 +67,120 @@ CREATE POLICY "Users can delete their own listings" ON listings.listings
 CREATE TABLE listings.listings_chocolate PARTITION OF listings.listings
 FOR VALUES IN ('chocolate');
 
+ALTER TABLE listings.listings_chocolate ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can view chocolate listings" ON listings.listings_chocolate
+    FOR SELECT
+        USING (TRUE);
+
+CREATE POLICY "Users can create their own chocolate listings" ON listings.listings_chocolate
+    FOR INSERT
+        WITH CHECK ((
+            SELECT
+                auth.uid ()) = seller_id);
+
+CREATE POLICY "Users can update their own chocolate listings" ON listings.listings_chocolate
+    FOR UPDATE
+        USING ((
+            SELECT
+                auth.uid ()) = seller_id)
+            WITH CHECK ((
+                SELECT
+                    auth.uid ()) = seller_id);
+
+CREATE POLICY "Users can delete their own chocolate listings" ON listings.listings_chocolate
+    FOR DELETE
+        USING ((
+            SELECT
+                auth.uid ()) = seller_id);
+
 CREATE TABLE listings.listings_fruity PARTITION OF listings.listings
 FOR VALUES IN ('fruity');
+
+ALTER TABLE listings.listings_fruity ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can view fruity listings" ON listings.listings_fruity
+    FOR SELECT
+        USING (TRUE);
+
+CREATE POLICY "Users can create their own fruity listings" ON listings.listings_fruity
+    FOR INSERT
+        WITH CHECK ((
+            SELECT
+                auth.uid ()) = seller_id);
+
+CREATE POLICY "Users can update their own fruity listings" ON listings.listings_fruity
+    FOR UPDATE
+        USING ((
+            SELECT
+                auth.uid ()) = seller_id)
+            WITH CHECK ((
+                SELECT
+                    auth.uid ()) = seller_id);
+
+CREATE POLICY "Users can delete their own fruity listings" ON listings.listings_fruity
+    FOR DELETE
+        USING ((
+            SELECT
+                auth.uid ()) = seller_id);
 
 CREATE TABLE listings.listings_tropical PARTITION OF listings.listings
 FOR VALUES IN ('tropical');
 
+ALTER TABLE listings.listings_tropical ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can view tropical listings" ON listings.listings_tropical
+    FOR SELECT
+        USING (TRUE);
+
+CREATE POLICY "Users can create their own tropical listings" ON listings.listings_tropical
+    FOR INSERT
+        WITH CHECK ((
+            SELECT
+                auth.uid ()) = seller_id);
+
+CREATE POLICY "Users can update their own tropical listings" ON listings.listings_tropical
+    FOR UPDATE
+        USING ((
+            SELECT
+                auth.uid ()) = seller_id)
+            WITH CHECK ((
+                SELECT
+                    auth.uid ()) = seller_id);
+
+CREATE POLICY "Users can delete their own tropical listings" ON listings.listings_tropical
+    FOR DELETE
+        USING ((
+            SELECT
+                auth.uid ()) = seller_id);
+
 CREATE TABLE listings.listings_caramel PARTITION OF listings.listings
 FOR VALUES IN ('caramel');
+
+ALTER TABLE listings.listings_caramel ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can view caramel listings" ON listings.listings_caramel
+    FOR SELECT
+        USING (TRUE);
+
+CREATE POLICY "Users can create their own caramel listings" ON listings.listings_caramel
+    FOR INSERT
+        WITH CHECK ((
+            SELECT
+                auth.uid ()) = seller_id);
+
+CREATE POLICY "Users can update their own caramel listings" ON listings.listings_caramel
+    FOR UPDATE
+        USING ((
+            SELECT
+                auth.uid ()) = seller_id)
+            WITH CHECK ((
+                SELECT
+                    auth.uid ()) = seller_id);
+
+CREATE POLICY "Users can delete their own caramel listings" ON listings.listings_caramel
+    FOR DELETE
+        USING ((
+            SELECT
+                auth.uid ()) = seller_id);
 
