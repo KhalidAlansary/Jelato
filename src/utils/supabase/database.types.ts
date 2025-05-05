@@ -7,6 +7,217 @@ export type Json =
   | Json[];
 
 export type Database = {
+  listings: {
+    Tables: {
+      listings: {
+        Row: {
+          category: Database["listings"]["Enums"]["category_type"];
+          created_at: string | null;
+          description: string | null;
+          id: number;
+          image_url: string | null;
+          is_active: boolean | null;
+          price: number;
+          seller_id: string;
+          stock: number;
+          title: string;
+        };
+        Insert: {
+          category: Database["listings"]["Enums"]["category_type"];
+          created_at?: string | null;
+          description?: string | null;
+          id?: number;
+          image_url?: string | null;
+          is_active?: boolean | null;
+          price: number;
+          seller_id: string;
+          stock: number;
+          title: string;
+        };
+        Update: {
+          category?: Database["listings"]["Enums"]["category_type"];
+          created_at?: string | null;
+          description?: string | null;
+          id?: number;
+          image_url?: string | null;
+          is_active?: boolean | null;
+          price?: number;
+          seller_id?: string;
+          stock?: number;
+          title?: string;
+        };
+        Relationships: [];
+      };
+      listings_caramel: {
+        Row: {
+          category: Database["listings"]["Enums"]["category_type"];
+          created_at: string | null;
+          description: string | null;
+          id: number;
+          image_url: string | null;
+          is_active: boolean | null;
+          price: number;
+          seller_id: string;
+          stock: number;
+          title: string;
+        };
+        Insert: {
+          category: Database["listings"]["Enums"]["category_type"];
+          created_at?: string | null;
+          description?: string | null;
+          id?: number;
+          image_url?: string | null;
+          is_active?: boolean | null;
+          price: number;
+          seller_id: string;
+          stock: number;
+          title: string;
+        };
+        Update: {
+          category?: Database["listings"]["Enums"]["category_type"];
+          created_at?: string | null;
+          description?: string | null;
+          id?: number;
+          image_url?: string | null;
+          is_active?: boolean | null;
+          price?: number;
+          seller_id?: string;
+          stock?: number;
+          title?: string;
+        };
+        Relationships: [];
+      };
+      listings_chocolate: {
+        Row: {
+          category: Database["listings"]["Enums"]["category_type"];
+          created_at: string | null;
+          description: string | null;
+          id: number;
+          image_url: string | null;
+          is_active: boolean | null;
+          price: number;
+          seller_id: string;
+          stock: number;
+          title: string;
+        };
+        Insert: {
+          category: Database["listings"]["Enums"]["category_type"];
+          created_at?: string | null;
+          description?: string | null;
+          id?: number;
+          image_url?: string | null;
+          is_active?: boolean | null;
+          price: number;
+          seller_id: string;
+          stock: number;
+          title: string;
+        };
+        Update: {
+          category?: Database["listings"]["Enums"]["category_type"];
+          created_at?: string | null;
+          description?: string | null;
+          id?: number;
+          image_url?: string | null;
+          is_active?: boolean | null;
+          price?: number;
+          seller_id?: string;
+          stock?: number;
+          title?: string;
+        };
+        Relationships: [];
+      };
+      listings_fruity: {
+        Row: {
+          category: Database["listings"]["Enums"]["category_type"];
+          created_at: string | null;
+          description: string | null;
+          id: number;
+          image_url: string | null;
+          is_active: boolean | null;
+          price: number;
+          seller_id: string;
+          stock: number;
+          title: string;
+        };
+        Insert: {
+          category: Database["listings"]["Enums"]["category_type"];
+          created_at?: string | null;
+          description?: string | null;
+          id?: number;
+          image_url?: string | null;
+          is_active?: boolean | null;
+          price: number;
+          seller_id: string;
+          stock: number;
+          title: string;
+        };
+        Update: {
+          category?: Database["listings"]["Enums"]["category_type"];
+          created_at?: string | null;
+          description?: string | null;
+          id?: number;
+          image_url?: string | null;
+          is_active?: boolean | null;
+          price?: number;
+          seller_id?: string;
+          stock?: number;
+          title?: string;
+        };
+        Relationships: [];
+      };
+      listings_tropical: {
+        Row: {
+          category: Database["listings"]["Enums"]["category_type"];
+          created_at: string | null;
+          description: string | null;
+          id: number;
+          image_url: string | null;
+          is_active: boolean | null;
+          price: number;
+          seller_id: string;
+          stock: number;
+          title: string;
+        };
+        Insert: {
+          category: Database["listings"]["Enums"]["category_type"];
+          created_at?: string | null;
+          description?: string | null;
+          id?: number;
+          image_url?: string | null;
+          is_active?: boolean | null;
+          price: number;
+          seller_id: string;
+          stock: number;
+          title: string;
+        };
+        Update: {
+          category?: Database["listings"]["Enums"]["category_type"];
+          created_at?: string | null;
+          description?: string | null;
+          id?: number;
+          image_url?: string | null;
+          is_active?: boolean | null;
+          price?: number;
+          seller_id?: string;
+          stock?: number;
+          title?: string;
+        };
+        Relationships: [];
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
+    };
+    Enums: {
+      category_type: "chocolate" | "fruity" | "tropical" | "caramel";
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
   public: {
     Tables: {
       profiles: {
@@ -36,6 +247,83 @@ export type Database = {
     };
     Functions: {
       [_ in never]: never;
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+  };
+  transactions: {
+    Tables: {
+      deposits: {
+        Row: {
+          amount: number;
+          created_at: string | null;
+          id: number;
+          user_id: string | null;
+        };
+        Insert: {
+          amount: number;
+          created_at?: string | null;
+          id?: number;
+          user_id?: string | null;
+        };
+        Update: {
+          amount?: number;
+          created_at?: string | null;
+          id?: number;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
+      transactions: {
+        Row: {
+          amount: number;
+          buyer_id: string | null;
+          created_at: string | null;
+          id: number;
+          listing_category: Database["listings"]["Enums"]["category_type"];
+          listing_id: number;
+          seller_id: string | null;
+        };
+        Insert: {
+          amount: number;
+          buyer_id?: string | null;
+          created_at?: string | null;
+          id?: number;
+          listing_category: Database["listings"]["Enums"]["category_type"];
+          listing_id: number;
+          seller_id?: string | null;
+        };
+        Update: {
+          amount?: number;
+          buyer_id?: string | null;
+          created_at?: string | null;
+          id?: number;
+          listing_category?: Database["listings"]["Enums"]["category_type"];
+          listing_id?: number;
+          seller_id?: string | null;
+        };
+        Relationships: [];
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      deposit: {
+        Args: { amount: number };
+        Returns: number;
+      };
+      purchase: {
+        Args: {
+          listing_id: number;
+          listing_category: Database["listings"]["Enums"]["category_type"];
+        };
+        Returns: undefined;
+      };
     };
     Enums: {
       [_ in never]: never;
@@ -152,7 +440,15 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
+  listings: {
+    Enums: {
+      category_type: ["chocolate", "fruity", "tropical", "caramel"],
+    },
+  },
   public: {
+    Enums: {},
+  },
+  transactions: {
     Enums: {},
   },
 } as const;

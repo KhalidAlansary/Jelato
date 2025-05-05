@@ -1,5 +1,20 @@
 CREATE SCHEMA listings;
 
+-- Expose schema
+GRANT USAGE ON SCHEMA listings TO anon, authenticated, service_role;
+
+GRANT ALL ON ALL TABLES IN SCHEMA listings TO anon, authenticated, service_role;
+
+GRANT ALL ON ALL ROUTINES IN SCHEMA listings TO anon, authenticated, service_role;
+
+GRANT ALL ON ALL SEQUENCES IN SCHEMA listings TO anon, authenticated, service_role;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA listings GRANT ALL ON TABLES TO anon, authenticated, service_role;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA listings GRANT ALL ON ROUTINES TO anon, authenticated, service_role;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA listings GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
+
 CREATE TYPE listings.category_type AS ENUM (
     'chocolate',
     'fruity',

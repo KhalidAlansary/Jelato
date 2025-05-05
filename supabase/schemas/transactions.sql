@@ -1,5 +1,20 @@
 CREATE SCHEMA transactions;
 
+-- Expose schema
+GRANT USAGE ON SCHEMA transactions TO anon, authenticated, service_role;
+
+GRANT ALL ON ALL TABLES IN SCHEMA transactions TO anon, authenticated, service_role;
+
+GRANT ALL ON ALL ROUTINES IN SCHEMA transactions TO anon, authenticated, service_role;
+
+GRANT ALL ON ALL SEQUENCES IN SCHEMA transactions TO anon, authenticated, service_role;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA transactions GRANT ALL ON TABLES TO anon, authenticated, service_role;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA transactions GRANT ALL ON ROUTINES TO anon, authenticated, service_role;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA transactions GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
+
 CREATE TABLE transactions.transactions (
     id serial PRIMARY KEY,
     buyer_id uuid REFERENCES profiles (id) ON DELETE SET NULL,
@@ -92,4 +107,28 @@ LANGUAGE plpgsql;
 REVOKE EXECUTE ON FUNCTION transactions.purchase FROM public;
 
 REVOKE EXECUTE ON FUNCTION transactions.purchase FROM anon;
+
+CREATE TABLE transactions.deposits (
+    id serial PRIMARY KEY,
+    user_id uuid REFERENCES profiles (id) ON DELETE SET NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE FUNCTION transactions.deposit (amount DECIMAL(10, 2))
+    RETURNS DECIMAL (
+        10, 2)
+    LANGUAGE sql
+    AS $$
+    UPDATE
+        profiles
+    SET
+        balance = balance + amount
+    WHERE
+        id = (
+            SELECT
+                auth.uid ())
+    RETURNING
+        balance;
+$$;
 
