@@ -9,6 +9,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { StarIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -96,9 +97,11 @@ export default function ProductPage() {
         </Button>
         <Card className="w-full">
           {product.image && (
-            <img
+            <Image
               src={product.image}
               alt={product.title}
+              width={400}
+              height={256}
               className="w-full h-64 object-cover rounded-lg mb-6 border"
             />
           )}

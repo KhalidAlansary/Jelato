@@ -5,6 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { StarIcon, IceCream, History, Settings } from "lucide-react";
@@ -134,28 +136,28 @@ export default function ProfilePage() {
                 <CardContent>
                   <div className="space-y-4">
                     <div>
-                      <label className="text-sm font-medium">
+                      <Label className="text-sm font-medium">
                         Display Name
-                      </label>
-                      <input
+                      </Label>
+                      <Input
                         type="text"
-                        className="w-full mt-1 px-3 py-2 border rounded-md"
+                        className="w-full mt-1"
                         defaultValue="John's Ice Cream"
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium">
+                      <Label className="text-sm font-medium">
                         Email Notifications
-                      </label>
+                      </Label>
                       <div className="mt-2 space-y-2">
-                        <label className="flex items-center gap-2">
-                          <input type="checkbox" defaultChecked />
+                        <Label className="flex items-center gap-2">
+                          <Input type="checkbox" defaultChecked />
                           <span>New flavour releases</span>
-                        </label>
-                        <label className="flex items-center gap-2">
-                          <input type="checkbox" defaultChecked />
+                        </Label>
+                        <Label className="flex items-center gap-2">
+                          <Input type="checkbox" defaultChecked />
                           <span>New reviews</span>
-                        </label>
+                        </Label>
                       </div>
                     </div>
                     <Button>Save Changes</Button>

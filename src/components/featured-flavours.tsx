@@ -9,6 +9,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { StarIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const featuredFlavours = [
@@ -59,9 +60,11 @@ export function FeaturedFlavours() {
               className="group relative overflow-hidden transition-all hover:shadow-lg"
             >
               {flavour.image && (
-                <img
+                <Image
                   src={flavour.image}
                   alt={flavour.title}
+                  width={400}
+                  height={160}
                   className="w-full h-40 object-cover rounded-lg mb-4 border"
                 />
               )}

@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { StarIcon, Filter } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -82,7 +84,7 @@ export default function BrowsePage() {
               Filters
             </h2>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Category</label>
+              <Label className="text-sm font-medium">Category</Label>
               <Select>
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
@@ -96,7 +98,7 @@ export default function BrowsePage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Price Range ($)</label>
+              <Label className="text-sm font-medium">Price Range ($)</Label>
               <Slider
                 value={priceRange}
                 onValueChange={setPriceRange}
@@ -109,7 +111,7 @@ export default function BrowsePage() {
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Sort By</label>
+              <Label className="text-sm font-medium">Sort By</Label>
               <Select defaultValue="recent">
                 <SelectTrigger>
                   <SelectValue />
@@ -137,9 +139,11 @@ export default function BrowsePage() {
               <Card key={flavour.id} className="flex flex-col">
                 <CardHeader>
                   {flavour.image && (
-                    <img
+                    <Image
                       src={flavour.image}
                       alt={flavour.title}
+                      width={400}
+                      height={160}
                       className="w-full h-40 object-cover rounded-lg mb-4 border"
                     />
                   )}
