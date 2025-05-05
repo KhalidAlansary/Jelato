@@ -13,16 +13,74 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Wallet,
-  ArrowUpRight,
-  ArrowDownLeft,
-  Plus,
-  History,
-} from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import supabase from "@/utils/supabase/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Wallet, ArrowUpRight, ArrowDownLeft, History } from "lucide-react";
 import type React from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+const schema = z.object({
+  amount: z.coerce.number().min(0.01, "Amount must be greater than 0"),
+});
+
+type FormFields = z.infer<typeof schema>;
 
 export default function WalletPage() {
+  const { user } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormFields>({
+    resolver: zodResolver(schema),
+  });
+
+  const queryClient = useQueryClient();
+  const {
+    data: balance,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["balance", user],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("balance")
+        .eq("id", user.id)
+        .single();
+
+      if (error) throw error;
+      return data?.balance ?? 0;
+    },
+  });
+  if (error) {
+    console.error("Error fetching balance:", error);
+  }
+
+  async function deposit({ amount }: FormFields) {
+    const { data: newBalance, error } = await supabase
+      .schema("transactions")
+      .rpc("deposit", { amount });
+
+    if (error) {
+      console.error("Error depositing funds:", error);
+    } else {
+      queryClient.setQueryData(["balance", user], newBalance);
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <ProtectedRoute>
       <main className="flex-1 container py-8">
@@ -44,21 +102,11 @@ export default function WalletPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-4xl font-bold">$5.00</div>
+                <div className="text-4xl font-bold">${balance?.toFixed(2)}</div>
                 <p className="text-muted-foreground mt-2">
                   Available for purchases and transactions
                 </p>
               </CardContent>
-              <CardFooter>
-                <Button
-                  className="w-full"
-                  onClick={() =>
-                    document.getElementById("deposit-form")?.focus()
-                  }
-                >
-                  <Plus className="mr-2 h-4 w-4" /> Add Funds
-                </Button>
-              </CardFooter>
             </Card>
 
             {/* Deposit Card */}
@@ -70,23 +118,33 @@ export default function WalletPage() {
                 </CardTitle>
                 <CardDescription>Add to your wallet balance</CardDescription>
               </CardHeader>
-              <form>
+              <form onSubmit={handleSubmit(deposit)}>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="deposit-amount">Amount (USD)</Label>
+                    <Label htmlFor="amount">Amount (USD)</Label>
                     <Input
-                      id="deposit-form"
+                      id="amount"
                       type="number"
                       placeholder="0.00"
                       step="0.01"
                       min="0.01"
-                      required
+                      {...register("amount")}
+                      aria-invalid={errors.amount ? "true" : "false"}
                     />
+                    {errors.amount && (
+                      <p className="text-sm text-destructive mt-1">
+                        {errors.amount.message}
+                      </p>
+                    )}
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full">
-                    Deposit
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Depositing..." : "Deposit"}
                   </Button>
                 </CardFooter>
               </form>
