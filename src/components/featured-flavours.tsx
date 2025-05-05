@@ -20,7 +20,8 @@ const featuredFlavours = [
     price: "$5.99",
     category: "Chocolate",
     rating: 4.9,
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
+    image:
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
   },
   {
     id: 2,
@@ -30,7 +31,8 @@ const featuredFlavours = [
     price: "$4.99",
     category: "Fruity",
     rating: 4.8,
-    image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
+    image:
+      "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
   },
   {
     id: 3,
@@ -39,7 +41,8 @@ const featuredFlavours = [
     price: "$5.49",
     category: "Tropical",
     rating: 4.6,
-    image: "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80",
+    image:
+      "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80",
   },
 ];
 export function FeaturedFlavours() {

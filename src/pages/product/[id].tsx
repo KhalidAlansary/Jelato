@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { StarIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const featuredFlavours = [
   {
@@ -21,10 +21,12 @@ const featuredFlavours = [
     price: "$5.99",
     category: "Chocolate",
     rating: 4.9,
-    details: "Indulge in the ultimate chocolate experience! Our Choco Lava Delight features a creamy chocolate base, a gooey molten fudge center, and generous brownie chunks. Perfect for true chocolate lovers seeking a decadent treat.",
+    details:
+      "Indulge in the ultimate chocolate experience! Our Choco Lava Delight features a creamy chocolate base, a gooey molten fudge center, and generous brownie chunks. Perfect for true chocolate lovers seeking a decadent treat.",
     ingredients: ["Milk", "Cocoa", "Fudge", "Brownie Chunks", "Sugar", "Cream"],
     allergy: "Contains dairy, eggs, and gluten.",
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
+    image:
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
   },
   {
     id: 2,
@@ -34,10 +36,19 @@ const featuredFlavours = [
     price: "$4.99",
     category: "Fruity",
     rating: 4.8,
-    details: "Enjoy a burst of summer with Berry Bliss! This flavor combines the sweetness of strawberries, the tartness of raspberries, and the juiciness of blueberries for a refreshing, fruity delight.",
-    ingredients: ["Milk", "Strawberries", "Blueberries", "Raspberries", "Sugar", "Cream"],
+    details:
+      "Enjoy a burst of summer with Berry Bliss! This flavor combines the sweetness of strawberries, the tartness of raspberries, and the juiciness of blueberries for a refreshing, fruity delight.",
+    ingredients: [
+      "Milk",
+      "Strawberries",
+      "Blueberries",
+      "Raspberries",
+      "Sugar",
+      "Cream",
+    ],
     allergy: "Contains dairy.",
-    image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
+    image:
+      "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
   },
   {
     id: 3,
@@ -46,10 +57,12 @@ const featuredFlavours = [
     price: "$5.49",
     category: "Tropical",
     rating: 4.6,
-    details: "Escape to paradise! Tropical Paradise is a creamy blend of mango, pineapple, and coconut, transporting you to a sunny beach with every bite.",
+    details:
+      "Escape to paradise! Tropical Paradise is a creamy blend of mango, pineapple, and coconut, transporting you to a sunny beach with every bite.",
     ingredients: ["Milk", "Mango", "Pineapple", "Coconut", "Sugar", "Cream"],
     allergy: "Contains dairy and coconut.",
-    image: "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80",
+    image:
+      "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80",
   },
 ];
 
@@ -57,16 +70,16 @@ export default function ProductPage() {
   const router = useRouter();
   const { id } = router.query;
 
-  const product = featuredFlavours.find(
-    (flavour) => flavour.id === Number(id)
-  );
+  const product = featuredFlavours.find((flavour) => flavour.id === Number(id));
 
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">Product Not Found</h1>
-          <p className="mb-4">The product you&apos;re looking for doesn&apos;t exist.</p>
+          <p className="mb-4">
+            The product you&apos;re looking for doesn&apos;t exist.
+          </p>
           <Link href="/">
             <Button>Return Home</Button>
           </Link>
@@ -78,11 +91,7 @@ export default function ProductPage() {
   return (
     <div className="min-h-screen py-16 px-6">
       <div className="mx-auto max-w-4xl">
-        <Button
-          variant="ghost"
-          onClick={() => router.back()}
-          className="mb-8"
-        >
+        <Button variant="ghost" onClick={() => router.back()} className="mb-8">
           ← Back
         </Button>
         <Card className="w-full">
@@ -131,4 +140,4 @@ export default function ProductPage() {
       </div>
     </div>
   );
-} 
+}
