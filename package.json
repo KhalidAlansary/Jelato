@@ -6,7 +6,7 @@
     "start": "serve out",
     "lint": "next lint",
     "format": "prettier --write .",
-    "gen-types": "supabase gen types typescript --project-id aekbyvvqvfkyowejszpb --schema 'public, listings, transactions' > src/utils/supabase/database.types.ts"
+    "gen-types": "supabase gen types typescript --project-id aekbyvvqvfkyowejszpb --schema 'public, listings, transactions' > src/utils/supabase/database.types.ts && prettier --write src/utils/supabase/database.types.ts"
   },
   "engines": {
     "node": ">=20"
