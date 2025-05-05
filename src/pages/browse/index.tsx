@@ -77,16 +77,21 @@ export default function BrowsePage() {
     <main className="flex-1 container py-8">
       <div className="flex flex-col md:flex-row gap-8">
         {/* Filters Sidebar */}
-        <aside className="w-full md:w-64 space-y-6">
+        <aside className="w-full md:w-64 space-y-6" aria-label="Filter options">
           <div className="space-y-4">
             <h2 className="text-lg font-semibold flex items-center gap-2">
-              <Filter className="h-5 w-5" />
+              <Filter className="h-5 w-5" aria-hidden="true" />
               Filters
             </h2>
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Category</Label>
+              <Label htmlFor="category-select" className="text-sm font-medium">
+                Category
+              </Label>
               <Select>
-                <SelectTrigger>
+                <SelectTrigger
+                  id="category-select"
+                  aria-label="Select category"
+                >
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -98,22 +103,31 @@ export default function BrowsePage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Price Range ($)</Label>
+              <Label htmlFor="price-range" className="text-sm font-medium">
+                Price Range ($)
+              </Label>
               <Slider
+                id="price-range"
                 value={priceRange}
                 onValueChange={setPriceRange}
                 max={10}
                 step={0.1}
+                aria-label="Price range slider"
               />
-              <div className="flex justify-between text-sm text-muted-foreground">
+              <div
+                className="flex justify-between text-sm text-muted-foreground"
+                aria-live="polite"
+              >
                 <span>${priceRange[0].toFixed(2)}</span>
                 <span>${priceRange[1].toFixed(2)}</span>
               </div>
             </div>
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Sort By</Label>
+              <Label htmlFor="sort-select" className="text-sm font-medium">
+                Sort By
+              </Label>
               <Select defaultValue="recent">
-                <SelectTrigger>
+                <SelectTrigger id="sort-select" aria-label="Select sort option">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -130,8 +144,12 @@ export default function BrowsePage() {
         {/* Flavours Grid */}
         <div className="flex-1 space-y-6">
           <div className="flex items-center gap-4">
-            <Input placeholder="Search flavours..." className="max-w-md" />
-            <Button>Search</Button>
+            <Input
+              placeholder="Search flavours..."
+              className="max-w-md"
+              aria-label="Search flavours"
+            />
+            <Button aria-label="Search">Search</Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

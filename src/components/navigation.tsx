@@ -21,10 +21,11 @@ import {
   UserPlus,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export function Navigation() {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, isLoading } = useAuth();
 
   async function signout() {
@@ -33,38 +34,49 @@ export function Navigation() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header
+      className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      role="banner"
+    >
       <div className="container flex h-16 items-center">
         <div className="mr-4 hidden md:flex">
           <Link
             href="/"
             className="mr-6 flex items-center space-x-2 text-primary"
+            aria-label="Jelato Home"
           >
-            <IceCreamCone className="h-6 w-6" />
+            <IceCreamCone className="h-6 w-6" aria-hidden="true" />
             <span className="hidden font-bold sm:inline-block">Jelato</span>
           </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
+          <nav
+            className="flex items-center space-x-6 text-sm font-medium"
+            aria-label="Main navigation"
+          >
             <Link
               href="/browse"
               className="transition-colors hover:text-foreground/80 text-foreground"
+              aria-current={pathname === "/browse" ? "page" : undefined}
             >
               Browse
             </Link>
             <Link
               href="/sell"
               className="transition-colors hover:text-foreground/80 text-foreground"
+              aria-current={pathname === "/sell" ? "page" : undefined}
             >
               Sell
             </Link>
             <Link
               href="/governance"
               className="transition-colors hover:text-foreground/80 text-foreground"
+              aria-current={pathname === "/governance" ? "page" : undefined}
             >
               Governance
             </Link>
             <Link
               href="/profile"
               className="transition-colors hover:text-foreground/80 text-foreground"
+              aria-current={pathname === "/profile" ? "page" : undefined}
             >
               Profile
             </Link>

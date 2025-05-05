@@ -75,7 +75,10 @@ export default function ProductPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div
+        className="min-h-screen flex items-center justify-center"
+        role="alert"
+      >
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">Product Not Found</h1>
           <p className="mb-4">
@@ -92,14 +95,19 @@ export default function ProductPage() {
   return (
     <div className="min-h-screen py-16 px-6">
       <div className="mx-auto max-w-4xl">
-        <Button variant="ghost" onClick={() => router.back()} className="mb-8">
+        <Button
+          variant="ghost"
+          onClick={() => router.back()}
+          className="mb-8"
+          aria-label="Go back to previous page"
+        >
           ← Back
         </Button>
         <Card className="w-full">
           {product.image && (
             <Image
               src={product.image}
-              alt={product.title}
+              alt={`${product.title} ice cream flavor`}
               width={400}
               height={256}
               className="w-full h-64 object-cover rounded-lg mb-6 border"
@@ -113,26 +121,38 @@ export default function ProductPage() {
                   {product.description}
                 </CardDescription>
               </div>
-              <Badge variant="secondary" className="text-lg">
+              <Badge
+                variant="secondary"
+                className="text-lg"
+                aria-label={`Category: ${product.category}`}
+              >
                 {product.category}
               </Badge>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2 text-yellow-500 mb-6">
-              <StarIcon className="h-6 w-6 fill-current" />
+            <div
+              className="flex items-center gap-2 text-yellow-500 mb-6"
+              aria-label={`Rating: ${product.rating} out of 5`}
+            >
+              <StarIcon className="h-6 w-6 fill-current" aria-hidden="true" />
               <span className="text-xl font-medium">{product.rating}</span>
             </div>
             <div className="space-y-4">
               <h3 className="text-xl font-semibold">About this flavour</h3>
               <p className="text-gray-600">{product.details}</p>
               <h4 className="text-lg font-semibold mt-4">Ingredients</h4>
-              <ul className="list-disc list-inside text-gray-500">
+              <ul
+                className="list-disc list-inside text-gray-500"
+                aria-label="List of ingredients"
+              >
                 {product.ingredients.map((ing, idx) => (
                   <li key={idx}>{ing}</li>
                 ))}
               </ul>
-              <p className="text-sm text-red-500 mt-2">{product.allergy}</p>
+              <p className="text-sm text-red-500 mt-2" role="alert">
+                {product.allergy}
+              </p>
             </div>
           </CardContent>
           <CardFooter className="flex justify-between items-center border-t pt-6">

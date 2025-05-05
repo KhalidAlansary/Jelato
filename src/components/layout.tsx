@@ -15,11 +15,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           name="description"
           content="Buy and sell ice cream flavours smoothly"
         />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#ffffff" />
+        <meta name="color-scheme" content="light dark" />
       </Head>
       <Providers>
-        <div className="min-h-screen flex flex-col">
+        <div className="min-h-screen flex flex-col" role="document">
           <Navigation />
-          {children}
+          <main id="main-content" className="flex-1">
+            {children}
+          </main>
           <Footer />
         </div>
       </Providers>
