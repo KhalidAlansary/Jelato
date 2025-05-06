@@ -18,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import { categories, type Category } from "@/constants/categories";
 import supabase from "@/utils/supabase/client";
 import type { Database } from "@/utils/supabase/database.types";
@@ -26,13 +25,13 @@ import { useQuery } from "@tanstack/react-query";
 import { Filter } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 type Listing = Database["listings"]["Tables"]["listings"]["Row"];
 type sortMethod = "recent" | "price-low" | "price-high";
 
 export default function BrowsePage() {
-  const [priceRange, setPriceRange] = useState([0, 10]);
   const [category, setCategory] = useState<Category>("chocolate");
   const [sortBy, setSortBy] = useState<sortMethod>("recent");
 
@@ -48,17 +47,24 @@ export default function BrowsePage() {
     },
   });
 
-  const activeListings = data?.filter(
-    (listing) => listing.stock > 0 && listing.is_active,
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q");
+
+  const filteredListings = data?.filter(
+    (listing) =>
+      listing.stock > 0 &&
+      listing.is_active &&
+      listing.title.toLowerCase().includes(query?.toLowerCase() || "") &&
+      listing.category === category,
   );
 
   let sortedListings;
   if (sortBy === "recent") {
-    sortedListings = activeListings?.reverse();
+    sortedListings = filteredListings?.reverse();
   } else if (sortBy === "price-low") {
-    sortedListings = activeListings?.sort((a, b) => a.price - b.price);
+    sortedListings = filteredListings?.sort((a, b) => a.price - b.price);
   } else if (sortBy === "price-high") {
-    sortedListings = activeListings?.sort((a, b) => b.price - a.price);
+    sortedListings = filteredListings?.sort((a, b) => b.price - a.price);
   }
 
   return (
@@ -95,26 +101,6 @@ export default function BrowsePage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="price-range" className="text-sm font-medium">
-                Price Range ($)
-              </Label>
-              <Slider
-                id="price-range"
-                value={priceRange}
-                onValueChange={setPriceRange}
-                max={10}
-                step={0.1}
-                aria-label="Price range slider"
-              />
-              <div
-                className="flex justify-between text-sm text-muted-foreground"
-                aria-live="polite"
-              >
-                <span>${priceRange[0].toFixed(2)}</span>
-                <span>${priceRange[1].toFixed(2)}</span>
-              </div>
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="sort-select" className="text-sm font-medium">
                 Sort By
               </Label>
@@ -138,12 +124,15 @@ export default function BrowsePage() {
         {/* Flavours Grid */}
         <div className="flex-1 space-y-6">
           <div className="flex items-center gap-4">
-            <Input
-              placeholder="Search flavours..."
-              className="max-w-md"
-              aria-label="Search flavours"
-            />
-            <Button aria-label="Search">Search</Button>
+            <form className="flex gap-2 w-full max-w-md" action="/browse">
+              <Input
+                name="q"
+                placeholder="Search flavours..."
+                className="flex-1"
+                aria-label="Search flavours"
+              />
+              <Button aria-label="Search">Search</Button>
+            </form>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
