@@ -29,10 +29,13 @@ import Link from "next/link";
 import { useState } from "react";
 
 type Listing = Database["listings"]["Tables"]["listings"]["Row"];
+type sortMethod = "recent" | "price-low" | "price-high";
 
 export default function BrowsePage() {
   const [priceRange, setPriceRange] = useState([0, 10]);
   const [category, setCategory] = useState<Category>("chocolate");
+  const [sortBy, setSortBy] = useState<sortMethod>("recent");
+
   const { data, isLoading, error } = useQuery({
     queryKey: [`listings_${category}`],
     queryFn: async () => {
@@ -44,9 +47,19 @@ export default function BrowsePage() {
       return data;
     },
   });
+
   const activeListings = data?.filter(
     (listing) => listing.stock > 0 && listing.is_active,
   );
+
+  let sortedListings;
+  if (sortBy === "recent") {
+    sortedListings = activeListings?.reverse();
+  } else if (sortBy === "price-low") {
+    sortedListings = activeListings?.sort((a, b) => a.price - b.price);
+  } else if (sortBy === "price-high") {
+    sortedListings = activeListings?.sort((a, b) => b.price - a.price);
+  }
 
   return (
     <main className="flex-1 container py-8">
@@ -105,13 +118,15 @@ export default function BrowsePage() {
               <Label htmlFor="sort-select" className="text-sm font-medium">
                 Sort By
               </Label>
-              <Select defaultValue="recent">
+              <Select
+                value={sortBy}
+                onValueChange={(value) => setSortBy(value as sortMethod)}
+              >
                 <SelectTrigger id="sort-select" aria-label="Select sort option">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="recent">Most Recent</SelectItem>
-                  <SelectItem value="popular">Most Popular</SelectItem>
                   <SelectItem value="price-low">Price: Low to High</SelectItem>
                   <SelectItem value="price-high">Price: High to Low</SelectItem>
                 </SelectContent>
@@ -155,8 +170,8 @@ export default function BrowsePage() {
               <div className="col-span-full text-center text-red-500">
                 Error loading listings
               </div>
-            ) : activeListings ? (
-              activeListings.map((listing: Listing) => (
+            ) : sortedListings ? (
+              sortedListings.map((listing: Listing) => (
                 <Card key={listing.id} className="flex flex-col">
                   <CardHeader>
                     {listing.image_url && (
