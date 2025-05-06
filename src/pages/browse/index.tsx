@@ -19,59 +19,34 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { StarIcon, Filter } from "lucide-react";
+import { categories, type Category } from "@/constants/categories";
+import supabase from "@/utils/supabase/client";
+import type { Database } from "@/utils/supabase/database.types";
+import { useQuery } from "@tanstack/react-query";
+import { Filter } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-export const flavours = [
-  {
-    id: 1,
-    title: "Choco Lava Delight",
-    description:
-      "Rich chocolate ice cream with a molten fudge core and brownie chunks.",
-    price: 5.99,
-    category: "Chocolate",
-    rating: 4.9,
-    seller: "SweetTreats",
-    image: "https://via.placeholder.com/400x160?text=Choco+Lava+Delight",
-  },
-  {
-    id: 2,
-    title: "Berry Bliss",
-    description:
-      "A refreshing mix of strawberry, blueberry, and raspberry swirls.",
-    price: 4.99,
-    category: "Fruity",
-    rating: 4.8,
-    seller: "BerryWorld",
-    image: "https://via.placeholder.com/400x160?text=Berry+Bliss",
-  },
-  {
-    id: 3,
-    title: "Tropical Paradise",
-    description: "A tropical blend of mango, pineapple, and coconut flavors.",
-    price: 5.49,
-    category: "Tropical",
-    rating: 4.6,
-    seller: "TropiCool",
-    image: "https://via.placeholder.com/400x160?text=Tropical+Paradise",
-  },
-  {
-    id: 4,
-    title: "Caramel Crunch",
-    description:
-      "Creamy caramel ice cream with crunchy toffee bits and caramel swirls.",
-    price: 5.99,
-    category: "Caramel",
-    rating: 4.8,
-    seller: "CaramelKing",
-    image: "https://via.placeholder.com/400x160?text=Caramel+Crunch",
-  },
-];
+type Listing = Database["listings"]["Tables"]["listings"]["Row"];
 
 export default function BrowsePage() {
   const [priceRange, setPriceRange] = useState([0, 10]);
+  const [category, setCategory] = useState<Category>("chocolate");
+  const { data, isLoading, error } = useQuery({
+    queryKey: [`listings_${category}`],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .schema("listings")
+        .from(`listings_${category}`)
+        .select();
+      if (error) throw error;
+      return data;
+    },
+  });
+  const activeListings = data?.filter(
+    (listing) => listing.stock > 0 && listing.is_active,
+  );
 
   return (
     <main className="flex-1 container py-8">
@@ -87,7 +62,10 @@ export default function BrowsePage() {
               <Label htmlFor="category-select" className="text-sm font-medium">
                 Category
               </Label>
-              <Select>
+              <Select
+                value={category}
+                onValueChange={(value) => setCategory(value as Category)}
+              >
                 <SelectTrigger
                   id="category-select"
                   aria-label="Select category"
@@ -95,10 +73,11 @@ export default function BrowsePage() {
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="chocolate">Chocolate</SelectItem>
-                  <SelectItem value="fruity">Fruity</SelectItem>
-                  <SelectItem value="tropical">Tropical</SelectItem>
-                  <SelectItem value="caramel">Caramel</SelectItem>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -153,43 +132,71 @@ export default function BrowsePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {flavours.map((flavour) => (
-              <Card key={flavour.id} className="flex flex-col">
-                <CardHeader>
-                  {flavour.image && (
-                    <Image
-                      src={flavour.image}
-                      alt={flavour.title}
-                      width={400}
-                      height={160}
-                      className="w-full h-40 object-cover rounded-lg mb-4 border"
-                    />
-                  )}
-                  <CardTitle className="flex justify-between items-start gap-2">
-                    <span>{flavour.title}</span>
-                    <Badge variant="secondary">{flavour.category}</Badge>
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground">
-                    {flavour.description}
-                  </p>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <StarIcon className="h-4 w-4 fill-yellow-500 text-yellow-500" />
-                    <span className="text-sm">{flavour.rating}</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Seller: {flavour.seller}
-                  </p>
-                </CardContent>
-                <CardFooter className="flex justify-between items-center">
-                  <span className="text-lg font-bold">${flavour.price}</span>
-                  <Link href={`/browse/${flavour.id}`}>
-                    <Button className="cursor-pointer">View Details</Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-            ))}
+            {isLoading ? (
+              // Loading skeleton
+              Array.from({ length: 6 }).map((_, i) => (
+                <Card key={i} className="flex flex-col">
+                  <CardHeader>
+                    <div className="w-full h-40 bg-muted animate-pulse rounded-lg mb-4" />
+                    <div className="h-6 w-3/4 bg-muted animate-pulse rounded mb-2" />
+                    <div className="h-4 w-full bg-muted animate-pulse rounded" />
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <div className="h-4 w-1/4 bg-muted animate-pulse rounded mb-2" />
+                    <div className="h-4 w-1/3 bg-muted animate-pulse rounded" />
+                  </CardContent>
+                  <CardFooter className="flex justify-between items-center">
+                    <div className="h-6 w-16 bg-muted animate-pulse rounded" />
+                    <div className="h-10 w-24 bg-muted animate-pulse rounded" />
+                  </CardFooter>
+                </Card>
+              ))
+            ) : error ? (
+              <div className="col-span-full text-center text-red-500">
+                Error loading listings
+              </div>
+            ) : activeListings ? (
+              activeListings.map((listing: Listing) => (
+                <Card key={listing.id} className="flex flex-col">
+                  <CardHeader>
+                    {listing.image_url && (
+                      <Image
+                        src={listing.image_url}
+                        alt={listing.title}
+                        width={400}
+                        height={160}
+                        className="w-full h-40 object-cover rounded-lg mb-4 border"
+                      />
+                    )}
+                    <CardTitle className="flex justify-between items-start gap-2">
+                      <span>{listing.title}</span>
+                      <Badge variant="secondary">{listing.category}</Badge>
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      {listing.description}
+                    </p>
+                  </CardHeader>
+                  <CardContent className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">Stock: {listing.stock}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Seller ID: {listing.seller_id}
+                    </p>
+                  </CardContent>
+                  <CardFooter className="flex justify-between items-center">
+                    <span className="text-lg font-bold">${listing.price}</span>
+                    <Link href={`/browse/${listing.id}`}>
+                      <Button className="cursor-pointer">View Details</Button>
+                    </Link>
+                  </CardFooter>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full text-center text-muted-foreground">
+                No listings found
+              </div>
+            )}
           </div>
         </div>
       </div>
