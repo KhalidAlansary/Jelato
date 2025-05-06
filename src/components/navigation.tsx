@@ -115,11 +115,14 @@ export function Navigation() {
         </Sheet>
         <div className="w-full flex-1 md:w-auto md:flex-none">
           <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search Flavours..."
-              className="pl-8 md:w-[300px] lg:w-[400px]"
-            />
+            <form className="hidden md:flex" action="/browse">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                name="q"
+                placeholder="Search Flavours..."
+                className="pl-8 md:w-[300px] lg:w-[400px]"
+              />
+            </form>
           </div>
         </div>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
