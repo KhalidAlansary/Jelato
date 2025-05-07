@@ -14,23 +14,13 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { productSchema as schema } from "@/constants/product";
 import { useAuth } from "@/hooks/useAuth";
 import supabase from "@/utils/supabase/client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DollarSign } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
-
-const schema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  category: z.enum(["chocolate", "fruity", "tropical", "caramel"], {
-    errorMap: () => ({ message: "Please select a valid category" }),
-  }),
-  price: z.coerce.number().min(0.01, "Price must be greater than 0"),
-  imageUrl: z.string().url("Invalid URL"),
-  stock: z.coerce.number().min(1, "Stock must be greater than 0"),
-});
 
 type FormFields = z.infer<typeof schema>;
 
@@ -61,7 +51,7 @@ export default function SellPage() {
         description: data.description,
         category: data.category,
         price: data.price,
-        image_url: data.imageUrl,
+        image_url: data.image_url,
         stock: data.stock,
       });
 
@@ -187,12 +177,12 @@ export default function SellPage() {
                     <label className="text-sm font-medium">Image URL</label>
                     <Input
                       placeholder="Enter image URL"
-                      {...register("imageUrl")}
-                      aria-invalid={!!errors.imageUrl}
+                      {...register("image_url")}
+                      aria-invalid={!!errors.image_url}
                     />
-                    {errors.imageUrl && (
+                    {errors.image_url && (
                       <span className="text-xs text-red-500">
-                        {errors.imageUrl.message as string}
+                        {errors.image_url.message as string}
                       </span>
                     )}
                   </div>
