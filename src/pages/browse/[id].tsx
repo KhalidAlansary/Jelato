@@ -9,15 +9,20 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/hooks/useAuth";
 import supabase from "@/utils/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 export default function ProductPage() {
+  const { user, isLoading: userLoading } = useAuth();
+  const [purchaseError, setPurchaseError] = useState<string | null>(null);
+  const [deactivateError, setDeactivateError] = useState<string | null>(null);
   const router = useRouter();
-  const { id } = router.query;
+  const id = parseInt(router.query.id as string);
 
   const {
     data: product,
@@ -30,7 +35,7 @@ export default function ProductPage() {
         .schema("listings")
         .from("listings")
         .select()
-        .eq("id", parseInt(id as string))
+        .eq("id", id)
         .single();
       if (error) {
         throw error;
@@ -39,6 +44,40 @@ export default function ProductPage() {
     },
     enabled: !!id,
   });
+
+  async function purchase() {
+    if (!product) {
+      setPurchaseError("Product not found");
+      return;
+    }
+    const { error } = await supabase.schema("transactions").rpc("purchase", {
+      listing_id: id,
+      listing_category: product.category,
+    });
+    if (error) {
+      setPurchaseError(error.message);
+      return;
+    }
+    router.push("/profile");
+  }
+
+  async function deactivateListing() {
+    if (!product) {
+      setDeactivateError("Product not found");
+      return;
+    }
+    const { error } = await supabase
+      .schema("listings")
+      .from("listings")
+      .update({ is_active: false })
+      .eq("id", id);
+
+    if (error) {
+      setDeactivateError(error.message);
+      return;
+    }
+    router.push("/sell");
+  }
 
   if (error) {
     return (
@@ -57,7 +96,7 @@ export default function ProductPage() {
     );
   }
 
-  if (isLoading || !id) {
+  if (isLoading || !id || userLoading) {
     return (
       <div className="min-h-screen py-16 px-6">
         <div className="mx-auto max-w-4xl">
@@ -119,6 +158,8 @@ export default function ProductPage() {
     );
   }
 
+  const isSeller = user?.id === product.seller_id;
+
   return (
     <div className="min-h-screen py-16 px-6">
       <div className="mx-auto max-w-4xl">
@@ -161,13 +202,53 @@ export default function ProductPage() {
             <div className="space-y-4">
               <h3 className="text-xl font-semibold">About this flavour</h3>
               <p className="text-gray-600">{product.description}</p>
+              <div className="mt-4">
+                <p className="text-sm text-muted-foreground">
+                  Stock available: {product.stock}
+                </p>
+              </div>
             </div>
           </CardContent>
-          <CardFooter className="flex justify-between items-center border-t pt-6">
-            <span className="text-2xl font-bold">
-              ${product.price.toFixed(2)}
-            </span>
-            <Button size="lg">Add to Cart</Button>
+          <CardFooter className="flex flex-col gap-4 border-t pt-6">
+            <div className="flex justify-between items-center w-full">
+              <span className="text-2xl font-bold">
+                ${product.price.toFixed(2)}
+              </span>
+              {isSeller ? (
+                <div className="space-x-2">
+                  <Link href={`/sell/edit/${id}`}>
+                    <Button variant="outline" size="lg">
+                      Edit Listing
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="destructive"
+                    size="lg"
+                    onClick={deactivateListing}
+                  >
+                    Deactivate Listing
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  size="lg"
+                  onClick={purchase}
+                  disabled={product.stock <= 0}
+                >
+                  {product.stock <= 0 ? "Out of Stock" : "Purchase"}
+                </Button>
+              )}
+            </div>
+            {purchaseError && (
+              <p className="text-red-500 text-sm w-full text-center">
+                {purchaseError}
+              </p>
+            )}
+            {deactivateError && (
+              <p className="text-red-500 text-sm w-full text-center">
+                {deactivateError}
+              </p>
+            )}
           </CardFooter>
         </Card>
       </div>
