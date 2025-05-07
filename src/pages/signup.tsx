@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const schema = z
@@ -62,6 +63,7 @@ export default function SignupPage() {
     if (error) {
       setError("root", { message: error.message });
     } else {
+      toast.success("Please check your email for a confirmation link");
       router.push("/");
     }
   }
