@@ -8,70 +8,97 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import { StarIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import supabase from "@/utils/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-
-const featuredFlavours = [
-  {
-    id: 1,
-    title: "Choco Lava Delight",
-    description:
-      "Rich chocolate ice cream with a molten fudge core and brownie chunks.",
-    price: "$5.99",
-    category: "Chocolate",
-    rating: 4.9,
-    details:
-      "Indulge in the ultimate chocolate experience! Our Choco Lava Delight features a creamy chocolate base, a gooey molten fudge center, and generous brownie chunks. Perfect for true chocolate lovers seeking a decadent treat.",
-    ingredients: ["Milk", "Cocoa", "Fudge", "Brownie Chunks", "Sugar", "Cream"],
-    allergy: "Contains dairy, eggs, and gluten.",
-    image:
-      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    id: 2,
-    title: "Berry Bliss",
-    description:
-      "A refreshing mix of strawberry, blueberry, and raspberry swirls.",
-    price: "$4.99",
-    category: "Fruity",
-    rating: 4.8,
-    details:
-      "Enjoy a burst of summer with Berry Bliss! This flavor combines the sweetness of strawberries, the tartness of raspberries, and the juiciness of blueberries for a refreshing, fruity delight.",
-    ingredients: [
-      "Milk",
-      "Strawberries",
-      "Blueberries",
-      "Raspberries",
-      "Sugar",
-      "Cream",
-    ],
-    allergy: "Contains dairy.",
-    image:
-      "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
-  },
-  {
-    id: 3,
-    title: "Tropical Paradise",
-    description: "A tropical blend of mango, pineapple, and coconut flavors.",
-    price: "$5.49",
-    category: "Tropical",
-    rating: 4.6,
-    details:
-      "Escape to paradise! Tropical Paradise is a creamy blend of mango, pineapple, and coconut, transporting you to a sunny beach with every bite.",
-    ingredients: ["Milk", "Mango", "Pineapple", "Coconut", "Sugar", "Cream"],
-    allergy: "Contains dairy and coconut.",
-    image:
-      "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80",
-  },
-];
 
 export default function ProductPage() {
   const router = useRouter();
   const { id } = router.query;
 
-  const product = featuredFlavours.find((flavour) => flavour.id === Number(id));
+  const {
+    data: product,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ["product", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .schema("listings")
+        .from("listings")
+        .select()
+        .eq("id", parseInt(id as string))
+        .single();
+      if (error) {
+        throw error;
+      }
+      return data;
+    },
+    enabled: !!id,
+  });
+
+  if (error) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center"
+        role="alert"
+      >
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-4">Error Loading Product</h1>
+          <p className="mb-4 text-red-500">{(error as Error).message}</p>
+          <Link href="/">
+            <Button>Return Home</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading || !id) {
+    return (
+      <div className="min-h-screen py-16 px-6">
+        <div className="mx-auto max-w-4xl">
+          <Button
+            variant="ghost"
+            onClick={router.back}
+            className="mb-8"
+            aria-label="Go back to previous page"
+          >
+            ← Back
+          </Button>
+          <Card className="w-full">
+            <Skeleton className="w-full h-64 rounded-lg mb-6" />
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <div className="space-y-4">
+                  <Skeleton className="h-8 w-64" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+                <Skeleton className="h-6 w-24" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <Skeleton className="h-6 w-48" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-6 w-32 mt-4" />
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-between items-center border-t pt-6">
+              <Skeleton className="h-8 w-24" />
+              <Skeleton className="h-10 w-32" />
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -104,9 +131,9 @@ export default function ProductPage() {
           ← Back
         </Button>
         <Card className="w-full">
-          {product.image && (
+          {product.image_url && (
             <Image
-              src={product.image}
+              src={product.image_url}
               alt={`${product.title} ice cream flavor`}
               width={400}
               height={256}
@@ -131,32 +158,15 @@ export default function ProductPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div
-              className="flex items-center gap-2 text-yellow-500 mb-6"
-              aria-label={`Rating: ${product.rating} out of 5`}
-            >
-              <StarIcon className="h-6 w-6 fill-current" aria-hidden="true" />
-              <span className="text-xl font-medium">{product.rating}</span>
-            </div>
             <div className="space-y-4">
               <h3 className="text-xl font-semibold">About this flavour</h3>
-              <p className="text-gray-600">{product.details}</p>
-              <h4 className="text-lg font-semibold mt-4">Ingredients</h4>
-              <ul
-                className="list-disc list-inside text-gray-500"
-                aria-label="List of ingredients"
-              >
-                {product.ingredients.map((ing, idx) => (
-                  <li key={idx}>{ing}</li>
-                ))}
-              </ul>
-              <p className="text-sm text-red-500 mt-2" role="alert">
-                {product.allergy}
-              </p>
+              <p className="text-gray-600">{product.description}</p>
             </div>
           </CardContent>
           <CardFooter className="flex justify-between items-center border-t pt-6">
-            <span className="text-2xl font-bold">{product.price}</span>
+            <span className="text-2xl font-bold">
+              ${product.price.toFixed(2)}
+            </span>
             <Button size="lg">Add to Cart</Button>
           </CardFooter>
         </Card>
