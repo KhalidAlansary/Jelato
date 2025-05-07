@@ -11,7 +11,7 @@ export function useAuth() {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      return session?.user || null;
+      return session?.user ?? null;
     },
   });
 
@@ -19,7 +19,7 @@ export function useAuth() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      queryClient.setQueryData(["user"], session?.user || null);
+      queryClient.setQueryData(["user"], session?.user ?? null);
     });
 
     return subscription.unsubscribe;

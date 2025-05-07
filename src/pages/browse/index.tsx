@@ -54,7 +54,7 @@ export default function BrowsePage() {
     (listing) =>
       listing.stock > 0 &&
       listing.is_active &&
-      listing.title.toLowerCase().includes(query?.toLowerCase() || "") &&
+      listing.title.toLowerCase().includes(query?.toLowerCase() ?? "") &&
       listing.category === category,
   );
 
