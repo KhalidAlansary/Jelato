@@ -9,11 +9,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
-import { StarIcon, IceCream, History, Settings, Package } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import supabase from "@/utils/supabase/client";
-import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { StarIcon, IceCream, History, Settings, Package } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { toast } from "sonner";
 
 export default function ProfilePage() {
@@ -124,7 +124,9 @@ export default function ProfilePage() {
                     </div>
                   ) : listings?.length === 0 ? (
                     <div className="text-center py-8">
-                      <p className="text-muted-foreground mb-4">You haven&apos;t created any listings yet.</p>
+                      <p className="text-muted-foreground mb-4">
+                        You haven&apos;t created any listings yet.
+                      </p>
                       <Link href="/sell">
                         <Button>Create Your First Listing</Button>
                       </Link>
@@ -132,7 +134,10 @@ export default function ProfilePage() {
                   ) : (
                     <div className="space-y-6">
                       {listings?.map((listing) => (
-                        <div key={listing.id} className="flex gap-4 p-4 border rounded-lg">
+                        <div
+                          key={listing.id}
+                          className="flex gap-4 p-4 border rounded-lg"
+                        >
                           {listing.image_url && (
                             <Image
                               src={listing.image_url}
@@ -145,16 +150,28 @@ export default function ProfilePage() {
                           <div className="flex-1">
                             <div className="flex justify-between items-start">
                               <div>
-                                <h3 className="font-semibold">{listing.title}</h3>
+                                <h3 className="font-semibold">
+                                  {listing.title}
+                                </h3>
                                 <p className="text-sm text-muted-foreground">
                                   {listing.description}
                                 </p>
                                 <div className="flex items-center gap-2 mt-2">
-                                  <Badge variant={listing.is_active ? "default" : "secondary"}>
+                                  <Badge
+                                    variant={
+                                      listing.is_active
+                                        ? "default"
+                                        : "secondary"
+                                    }
+                                  >
                                     {listing.is_active ? "Active" : "Inactive"}
                                   </Badge>
-                                  <Badge variant="outline">${listing.price}</Badge>
-                                  <Badge variant="outline">Stock: {listing.stock}</Badge>
+                                  <Badge variant="outline">
+                                    ${listing.price}
+                                  </Badge>
+                                  <Badge variant="outline">
+                                    Stock: {listing.stock}
+                                  </Badge>
                                 </div>
                               </div>
                               <div className="flex gap-2">
@@ -167,7 +184,9 @@ export default function ProfilePage() {
                                   <Button
                                     variant="destructive"
                                     size="sm"
-                                    onClick={() => deactivateListing(listing.id)}
+                                    onClick={() =>
+                                      deactivateListing(listing.id)
+                                    }
                                   >
                                     Deactivate
                                   </Button>
