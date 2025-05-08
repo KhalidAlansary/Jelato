@@ -10,14 +10,18 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import supabase from "@/utils/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { Database } from "@/utils/supabase/database.types";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { StarIcon, IceCream, History, Settings, Package } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 
+type Listing = Database["listings"]["Tables"]["listings"]["Row"];
+
 export default function ProfilePage() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const firstName = user?.user_metadata.firstName;
   const lastName = user?.user_metadata.lastName;
   const createdAt = new Date(user?.created_at as string).toLocaleDateString(
@@ -44,32 +48,29 @@ export default function ProfilePage() {
     enabled: !!user?.id,
   });
 
-  async function deactivateListing(id: number) {
+  async function toggleListingStatus(id: number, isActive: boolean) {
     const { error } = await supabase
       .schema("listings")
       .from("listings")
-      .update({ is_active: false })
+      .update({ is_active: isActive })
       .eq("id", id);
 
     if (error) {
-      toast.error("Failed to deactivate listing");
+      toast.error(`Failed to ${isActive ? "activate" : "deactivate"} listing`);
       return;
     }
-    toast.success("Listing deactivated successfully");
-  }
+    toast.success(
+      `Listing ${isActive ? "activated" : "deactivated"} successfully`,
+    );
 
-  async function activateListing(id: number) {
-    const { error } = await supabase
-      .schema("listings")
-      .from("listings")
-      .update({ is_active: true })
-      .eq("id", id);
-
-    if (error) {
-      toast.error("Failed to activate listing");
-      return;
-    }
-    toast.success("Listing activated successfully");
+    queryClient.setQueryData<Listing[]>(
+      ["user-listings", user?.id],
+      (oldData) => {
+        return oldData?.map((listing) =>
+          listing.id === id ? { ...listing, is_active: isActive } : listing,
+        );
+      },
+    );
   }
 
   return (
@@ -185,7 +186,7 @@ export default function ProfilePage() {
                                     variant="destructive"
                                     size="sm"
                                     onClick={() =>
-                                      deactivateListing(listing.id)
+                                      toggleListingStatus(listing.id, false)
                                     }
                                   >
                                     Deactivate
@@ -194,7 +195,9 @@ export default function ProfilePage() {
                                   <Button
                                     variant="default"
                                     size="sm"
-                                    onClick={() => activateListing(listing.id)}
+                                    onClick={() =>
+                                      toggleListingStatus(listing.id, true)
+                                    }
                                   >
                                     Activate
                                   </Button>
