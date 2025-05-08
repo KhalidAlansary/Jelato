@@ -84,6 +84,9 @@ BEGIN
             balance = balance + listing_price
         WHERE
             id = listing_seller_id;
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'Seller not found';
+        END IF;
         -- Update the stock of the listing
         UPDATE
             listings.listings
