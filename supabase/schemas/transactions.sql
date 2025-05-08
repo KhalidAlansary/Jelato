@@ -104,7 +104,8 @@ BEGIN
 END;
 
 $$
-LANGUAGE plpgsql;
+LANGUAGE plpgsql
+SECURITY DEFINER;
 
 -- Only authenticated users can execute the purchase function
 REVOKE EXECUTE ON FUNCTION transactions.purchase FROM public;
