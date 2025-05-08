@@ -2,8 +2,8 @@ import { Database } from "./database.types";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient<Database>(
-  "https://aekbyvvqvfkyowejszpb.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFla2J5dnZxdmZreW93ZWpzenBiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQxODY5NzQsImV4cCI6MjA1OTc2Mjk3NH0.8AZUl0l0smpYaVL6T2bwnEtM2ggkGsK4nrWhu881Fb8",
+  "https://hvvoapffcckkpnqdojwf.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2dm9hcGZmY2Nra3BucWRvandmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3MTc2MzcsImV4cCI6MjA2MjI5MzYzN30.4qge7VgoIHI69930ObL5xDniodCGQXyhCFx_E_Wi7Jk",
 );
 
 export default supabase;
