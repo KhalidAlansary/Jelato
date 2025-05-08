@@ -67,13 +67,6 @@ export function Navigation() {
               Sell
             </Link>
             <Link
-              href="/governance"
-              className="transition-colors hover:text-foreground/80 text-foreground"
-              aria-current={pathname === "/governance" ? "page" : undefined}
-            >
-              Governance
-            </Link>
-            <Link
               href="/profile"
               className="transition-colors hover:text-foreground/80 text-foreground"
               aria-current={pathname === "/profile" ? "page" : undefined}
