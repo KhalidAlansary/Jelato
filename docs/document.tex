@@ -1,0 +1,454 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{lscape}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{pgfgantt}
+\usepackage{listings}
+\usepackage{pgfgantt}
+\usepackage{adjustbox}
+\usepackage{titlesec}
+\renewcommand{\chaptername}{}
+\renewcommand{\thechapter}{\arabic{chapter}}
+\titleformat{\chapter}[hang]{\normalfont\huge\bfseries}{\thechapter)}{1em}{}
+\geometry{margin=1in}
+\hypersetup{colorlinks,linkcolor=blue,urlcolor=blue}
+
+\title{
+    \vspace*{2cm}
+    \Huge\bfseries Jelato: A Distributed Online Marketplace for Ice Cream Flavours\\[1.5em]
+    \Large Comprehensive Project Report
+}
+\author{
+    \Large Team Members:\\[0.5em]
+    \normalsize
+    1. Name1 (ID1)\\
+    2. Name2 (ID2)\\
+    3. Name3 (ID3)\\
+    4. Name4 (ID4)\\
+    5. Name5 (ID5)\\
+    6. Name6 (ID6)\\
+    7. Name7 (ID7)\\
+    8. Name8 (ID8)\\
+    9. Name9 (ID9)
+}
+\date{\today}
+
+\begin{document}
+
+% Cover Page
+\begin{titlepage}
+    \begin{center}
+        \textsc{\Large Ain Shams University}\\[0.5em]
+        \textsc{\large Faculty of Engineering}\\[0.5em]
+        \textsc{\large Computer and Systems Engineering Department}\\[2.5em]
+        \rule{\textwidth}{2pt}\\[2em]
+        {\Huge \textbf{Project Report}}\\[1em]
+        {\Large \textbf{Module Code: CSE352s}}\\
+        {\Large \textbf{Module Name: Parallel and Distributed Systems}}\\[1em]
+        {\LARGE \textbf{Jelato: A Distributed Online Marketplace for Ice Cream Flavours}}\\[2em]
+        \rule{\textwidth}{2pt}\\[2.5em]
+        \textbf{Team Members:}\\[1em]
+        \begin{tabular}{ll}
+            1. & Name1 (ID1) \\
+            2. & Name2 (ID2) \\
+            3. & Name3 (ID3) \\
+            4. & Name4 (ID4) \\
+            5. & Name5 (ID5) \\
+            6. & Name6 (ID6) \\
+            7. & Name7 (ID7) \\
+            8. & Name8 (ID8) \\
+            9. & Name9 (ID9) \\
+        \end{tabular}
+        \vfill
+        \textbf{Website:} \url{https://khalidalansary.github.io/Jelato}\\
+        \textbf{Repository:} \url{https://github.com/KhalidAlansary/Jelato}
+        \vfill
+        \today
+    \end{center}
+\end{titlepage}
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+% Introduction
+\chapter{Introduction}
+\section{Background and Motivation}
+The exponential growth of online marketplaces has revolutionized the way people buy and sell goods. However, niche markets, such as artisan foods or local specialties, are often underserved by generic platforms. Ice cream, with its diverse range of flavours and artisanal varieties, is a prime candidate for a specialized, community-driven marketplace. The Jelato project addresses this gap by providing an online platform where users can seamlessly buy and sell unique ice cream flavours.
+
+\section{Problem Statement}
+Traditional e-commerce platforms are not tailored to the specific needs of the ice cream market, such as categorization by flavour, seasonal availability, or direct peer-to-peer transactions. Scalability and reliability are further challenged when user bases grow or when inventory is highly dynamic. There is a need for a robust, distributed, and scalable system that ensures smooth operation and optimal user experience.
+
+\section{Objectives}
+The objectives of the Jelato project are:
+\begin{itemize}
+    \item To design and implement a scalable, distributed online marketplace for ice cream flavours.
+    \item To facilitate secure, efficient, and user-friendly peer-to-peer transactions.
+    \item To leverage modern web technologies and distributed database solutions for high availability and fault tolerance.
+    \item To offer public APIs for extensibility and third-party integration.
+\end{itemize}
+
+\section{Scope}
+The scope of this project encompasses the full software development lifecycle, including requirements analysis, system design, implementation, testing, deployment, and documentation. While the primary focus is on ice cream flavours, the system is designed to be easily extensible to other types of products.
+
+% Target Beneficiaries
+\chapter{Target Beneficiaries of the Project}
+\section{Primary Users}
+\subsection*{Ice Cream Sellers}
+Individuals or small businesses can leverage Jelato to reach a wider market, list their unique flavours, and manage inventory efficiently. The platform empowers local producers and hobbyists to monetize their creations without the overhead of establishing a full e-commerce presence.
+
+\subsection*{Ice Cream Buyers}
+Enthusiasts seeking rare or artisanal flavours benefit from a curated marketplace. Buyers can compare prices, read reviews, and interact directly with sellers for personalized experiences.
+
+\section{Secondary Users}
+\subsection*{Third-Party Developers}
+With publicly available APIs, third-party services can integrate with Jelato. For example, logistics companies may automate delivery scheduling, or analytics firms can aggregate data for market research.
+
+\subsection*{Academic Community}
+Course instructors and students can use Jelato as a reference implementation for distributed system principles, collaborative software engineering, and scalable web development.
+
+\section{Value Proposition}
+\begin{itemize}
+    \item \textbf{For Sellers:} Increased visibility, automated transaction handling, and community engagement.
+    \item \textbf{For Buyers:} Access to diverse products, transparency, and trust through verified user profiles.
+    \item \textbf{For Integrators:} Easy data access via RESTful interfaces, enabling rapid prototyping of related services.
+    \item \textbf{For Researchers:} Real-world case study in distributed architecture and database partitioning.
+\end{itemize}
+
+% Adopted Programming Language
+\chapter{Adopted Programming Language and Technology Stack}
+\section{Frontend}
+\begin{itemize}
+    \item \textbf{React.js \& Next.js:} Enables modular, maintainable, and high-performance user interfaces. Next.js static export facilitates hosting on GitHub Pages, ensuring minimal backend dependency for UI delivery.
+    \item \textbf{TailwindCSS \& shadcn:} Provide a utility-first CSS framework and ready UI components, speeding up the development of responsive and visually appealing layouts.
+    \item \textbf{TypeScript:} Adds static typing to JavaScript, reducing runtime errors and improving code quality.
+\end{itemize}
+
+\section{Backend and Database}
+\begin{itemize}
+    \item \textbf{Supabase:} An open-source backend-as-a-service platform offering managed PostgreSQL, authentication, RESTful API generation (via PostgREST), and real-time subscriptions.
+    \item \textbf{PostgreSQL:} Chosen for its robustness, partitioning support, and advanced SQL features.
+    \item \textbf{PostgREST:} Exposes database tables and functions as a RESTful API, simplifying integration with the client and external services.
+\end{itemize}
+
+\section{Justification of Technology Choices}
+The selected stack prioritizes rapid development, scalability, and maintainability. Supabase abstracts much of the backend boilerplate, allowing the team to focus on core business logic and user experience. Partitioning in PostgreSQL directly supports distributed data management, while statically exported Next.js pages ensure fast, globally distributed access.
+
+% System Architecture
+\chapter{System Architecture}
+\section{Overview}
+Jelato is designed using a two-tier architecture, separating presentation logic (frontend) from data management and business logic (backend/database). This separation allows each tier to scale independently and supports robust security boundaries.
+
+\section{Detailed Block Diagram}
+\begin{center}
+\begin{tikzpicture}[node distance=2.5cm, every node/.style={draw, align=center, rounded corners}]
+    \node (user) {User Devices\\(Browsers)};
+    \node (frontend) [below=of user] {Frontend\\(React, Next.js, GitHub Pages)};
+    \node (api) [below=of frontend] {API Gateway\\(Supabase PostgREST)};
+    \node (auth) [left=of api, xshift=-3cm] {Auth Schema\\(Supabase)};
+    \node (db) [below=of api] {Distributed Database\\(Partitioned PostgreSQL)};
+    \draw[->] (user) -- (frontend);
+    \draw[->] (frontend) -- (api);
+    \draw[->] (api) -- (db);
+    \draw[->] (api) -- (auth);
+\end{tikzpicture}
+\end{center}
+
+\section{Architecture Components}
+\textbf{Frontend:} Handles all user interaction, state management, and input validation. Delivered as static assets via GitHub Pages for high availability and low latency.
+
+\textbf{Supabase API Gateway:} Acts as a secure intermediary between the client and the distributed database, enforcing authentication and authorization.
+
+\textbf{Distributed Database:} Implements horizontal partitioning on the listings table and uses separate schemas for modularity (auth, public, listings, transactions).
+
+\section{Design Choices and Alternatives}
+\begin{itemize}
+    \item \textbf{Two-Tier Model:} Chosen for its simplicity, clear separation of concerns, and suitability for cloud-based deployments.
+    \item \textbf{Partitioned Database:} Enhances scalability and performance, allowing different categories of listings to be managed and queried independently.
+    \item \textbf{Supabase vs. Custom Backend:} Supabase was selected to abstract authentication and API generation, reducing development effort and ensuring best security practices.
+    \item \textbf{Static Hosting:} Next.js static export allows decoupling the frontend from backend runtime scaling concerns.
+\end{itemize}
+
+\section{Distributed Architecture Model}
+Jelato leverages horizontal scaling at the database layer by partitioning the core \texttt{listings} table based on a meaningful column: the \textbf{listing category}. By using the category as the partitioning key, we ensure that queries and operations targeting specific categories (e.g., "chocolate", "fruity") are highly efficient and can be processed in parallel across partitions. This strategy maximizes the benefits of partitioning for both performance and maintainability, as each partition is optimized for access patterns relevant to its category. Furthermore, this approach enables the system to scale efficiently as the number of listings and categories grows, ensuring that no single partition or node becomes a bottleneck. The RESTful API gateway continues to enforce stateless, scalable interactions between the frontend and backend.
+
+% Application Level Protocol
+\chapter{Application Level Protocol}
+\section{Protocol Design}
+Jelato uses RESTful principles for all API interactions. Each resource (user, listing, transaction) is mapped to a distinct endpoint. JSON is used as the data interchange format.
+
+\section{Authentication and Authorization}
+\begin{itemize}
+    \item \textbf{JWT-based Authentication:} All modifying operations require a valid JWT, issued upon user login or registration.
+    \item \textbf{Role-Based Access Control:} API endpoints enforce permissions, ensuring users can only modify their own listings or view sensitive information.
+    \item \textbf{Session Management:} Tokens are securely stored on the client; refresh mechanisms are in place to prevent unauthorized access.
+\end{itemize}
+
+\section{Endpoint Examples}
+\begin{itemize}
+    \item \texttt{GET /rest/v1/listings}: Retrieve all active listings. Supports filtering by category, price, etc.
+    \item \texttt{POST /rest/v1/listings}: Create a new listing (requires authentication).
+    \item \texttt{PATCH /rest/v1/listings/\{id\}}: Update a listing (seller only).
+    \item \texttt{POST /rest/v1/transactions}: Execute a purchase transaction with atomic balance updates (details in DB design).
+\end{itemize}
+
+\section{Error Handling and Versioning}
+\begin{itemize}
+    \item \textbf{HTTP Status Codes:} APIs return appropriate status codes (200, 201, 400, 401, 403, 404, 500) with human-readable error messages.
+    \item \textbf{API Versioning:} The API is versioned via the URL (\texttt{/v1/}) to ensure backward compatibility as features evolve.
+\end{itemize}
+
+\section{Public APIs}
+Jelato exposes selected endpoints for third-party access, enabling integration with delivery services, payment gateways, or analytical tools, while enforcing CORS and API key policies.
+
+% Distributed Database Design
+\chapter{Distributed Database Design}
+\section{Schema Overview}
+Jelato’s database is logically divided into multiple schemas:
+\begin{itemize}
+    \item \texttt{auth}: Users, sessions, and authentication metadata.
+    \item \texttt{public}: User profile data (name, balance, etc.).
+    \item \texttt{listings}: Product categories and listings, partitioned horizontally.
+    \item \texttt{transactions}: Purchase records, transaction logs, and payment events.
+\end{itemize}
+
+\section{Partitioning Details}
+The \texttt{listings} table is horizontally partitioned by category (e.g., chocolate, fruity, tropical, caramel). Each partition is a separate physical table, enabling parallel query execution and simplifying maintenance.
+
+\section{Schema Diagram}
+% Add a diagram or use tabular representation
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Schema} & \textbf{Table} & \textbf{Description} \\
+\hline
+auth & users & Authentication credentials \\
+public & profiles & Name, email, balance, etc. \\
+listings & listings (partitioned) & All ice cream listings, partitioned by category \\
+transactions & transactions & Purchase records, references listings and profiles \\
+\hline
+\end{tabular}
+\end{center}
+
+\section{Partitioning and Distribution Justification}
+\begin{itemize}
+    \item \textbf{Performance:} Partitioning by category allows for more efficient search, especially for category-heavy queries.
+    \item \textbf{Scalability:} As the number of listings grows, new categories can be added as new partitions without impacting existing data.
+    \item \textbf{Maintenance:} Partitioned tables can be moved, archived, or optimized independently.
+\end{itemize}
+
+\section{Transaction Management}
+All transactions (purchases, balance updates) use database-level atomic operations to guarantee consistency, even under concurrent access or partial failures.
+
+% Time Plan
+\chapter{Time Plan}
+\section{Phases and Detailed Tasks}
+\begin{longtable}{|p{0.2\textwidth}|p{0.7\textwidth}|}
+    \hline
+    \textbf{Phase} & \textbf{Tasks} \\
+    \hline
+    Requirements Analysis & Stakeholder interviews, market research, requirements documentation, initial feature set definition \\
+    \hline
+    System Design & Architecture diagrams, schema design, API contract specification, technology selection, security review \\
+    \hline
+    Implementation & Frontend development, backend setup, API development, database partitioning, authentication integration \\
+    \hline
+    Integration & Frontend-backend API integration, schema migrations, deployment automation \\
+    \hline
+    Testing & Unit testing, integration testing, end-to-end testing, performance/load testing, bug fixing \\
+    \hline
+    Deployment & Static site deployment (GitHub Pages), database provisioning (Supabase), domain configuration, initial data seeding \\
+    \hline
+    Documentation & User manual, API documentation, codebase comments, project report preparation \\
+    \hline
+\end{longtable}
+
+
+
+\section{Gantt Chart}
+\begin{center}
+\begin{adjustbox}{max width=\textwidth}
+\begin{ganttchart}[
+    hgrid,
+    vgrid,
+    time slot format=isodate-yearmonth,
+    milestone/.append style={fill=red}
+  ]{2025-02}{2025-05}
+  \gantttitlecalendar{year, month=shortname, week} \\
+  \ganttbar{Requirements}{2025-02}{2025-02} \\
+  \ganttbar{Design}{2025-02}{2025-03} \\
+  \ganttbar{Implementation}{2025-03}{2025-04} \\
+  \ganttbar{Integration}{2025-04}{2025-04} \\
+  \ganttbar{Testing}{2025-04}{2025-05} \\
+  \ganttbar{Deployment}{2025-05}{2025-05} \\
+  \ganttbar{Documentation}{2025-05}{2025-05}
+\end{ganttchart}
+\end{adjustbox}
+\end{center}
+% Testing
+\chapter{Testing}
+\section{Testing Methodology}
+\textbf{Component Testing:} Each module (UI components, API endpoints, database procedures) was tested in isolation using automated and manual tests.
+
+\textbf{System Testing:} End-to-end workflows were validated to ensure correct integration, data consistency, and fault tolerance.
+
+\textbf{Performance Testing:} Simulated concurrent user access to evaluate system response times and identify bottlenecks.
+
+\section{Test Coverage}
+\begin{itemize}
+    \item User registration and authentication
+    \item Listing creation, update, and search
+    \item Transaction execution, including balance checks and rollbacks
+    \item API error handling (invalid input, unauthorized access)
+    \item UI responsiveness across devices and browsers
+\end{itemize}
+\pagebreak
+\section{Sample Test Cases and Results}
+\begin{longtable}{|p{0.3\textwidth}|p{0.5\textwidth}|p{0.1\textwidth}|}
+    \hline
+    \textbf{Test Case} & \textbf{Description} & \textbf{Result} \\
+    \hline
+    Register new user & Submit valid registration data & Pass \\
+    Register duplicate user & Submit existing email & Fail (Error message) \\
+    Create listing & Logged-in user creates a new listing & Pass \\
+    Search listings by category & Query for 'chocolate' listings & Pass \\
+    Purchase with sufficient balance & User buys item, balance deducted & Pass \\
+    Purchase with insufficient balance & Error shown, transaction blocked & Pass \\
+    Unauthorized listing update & User tries to edit others' listing & Fail (Error message) \\
+    API returns error on malformed request & Submit invalid JSON & Pass (400 error) \\
+    High concurrency purchases & Multiple users buy at once & Pass (no race conditions) \\
+    \hline
+\end{longtable}
+
+\section{Bug Tracking and Resolution}
+Issues were tracked using GitHub Issues. Each bug report included reproduction steps, expected and actual results, and resolution comments.
+
+% End-User Guide
+\chapter{End-User Guide}
+\section{Accessing Jelato}
+\begin{enumerate}
+    \item Open \url{https://khalidalansary.github.io/Jelato} in your browser.
+    \item Register for a new account or log in with existing credentials.
+\end{enumerate}
+
+\section{Buying Ice Cream Flavours}
+\begin{enumerate}
+    \item Browse the listings by category or use the search bar.
+    \item Click on a listing to view details, including seller info, price, and stock.
+    \item Click “Buy” to initiate a purchase. Confirm the transaction in the dialog.
+    \item Your balance will be updated and the seller notified.
+\end{enumerate}
+
+\section{Selling Your Own Flavours}
+\begin{enumerate}
+    \item Navigate to “My Dashboard”.
+    \item Click “Add Listing” and fill in the product details (flavour, description, category, price, image).
+    \item Your listing will be visible to all users.
+\end{enumerate}
+
+\section{Sample Screenshots}
+% Replace with actual screenshots
+\begin{center}
+    %\includegraphics[width=0.9\textwidth]{screenshot_home.png}
+    %\includegraphics[width=0.9\textwidth]{screenshot_listing.png}
+    %\includegraphics[width=0.9\textwidth]{screenshot_dashboard.png}
+\end{center}
+
+\section{Tips and Troubleshooting}
+\begin{itemize}
+    \item Ensure your browser allows cookies for authentication.
+    \item If your transaction fails, check your balance and internet connection.
+    \item For API integration, refer to the public API documentation.
+\end{itemize}
+
+% Resources Needed
+\chapter{Resources Needed}
+\section{Technological Resources}
+\begin{itemize}
+    \item \textbf{GitHub:} Source control, issue tracking, and static site hosting.
+    \item \textbf{Supabase:} Managed database, authentication, and API gateway.
+    \item \textbf{Next.js/React:} Frontend development.
+    \item \textbf{TailwindCSS/shadcn:} UI/UX development.
+    \item \textbf{Development Tools:} Node.js, npm, browser dev tools, VS Code.
+\end{itemize}
+
+\section{Justification}
+The chosen resources optimize for cost (leveraging free tiers), rapid prototyping, and ease of collaboration among a distributed team.
+
+% Role of Each Member
+\chapter{Role of Each Member}
+\begin{longtable}{|p{0.3\textwidth}|p{0.6\textwidth}|}
+    \hline
+    \textbf{Team Member} & \textbf{Role and Contribution} \\
+    \hline
+    Name1 (ID1) & Project management, requirements gathering \\
+    Name2 (ID2) & Frontend architecture, component development, UI/UX design \\
+    Name3 (ID3) & Backend integration, API security, authentication logic \\
+    Name4 (ID4) & Database schema design, partitioning, query optimization \\
+    Name6 (ID6) & Deployment, DevOps, CI/CD pipeline setup \\
+    Name7 (ID7) & Documentation, user guide, project report editing \\
+    Name8 (ID8) & API documentation, external integration scenarios \\
+    Name9 (ID9) & Support, feature extensions, maintenance, feedback handling \\
+    \hline
+\end{longtable}
+
+% Appendices
+\chapter{Appendices}
+\section{API Documentation}
+See repository \href{https://github.com/KhalidAlansary/Jelato}{README.md} for full API reference.
+
+\section{Example SQL for Partitioning}
+
+\begin{lstlisting}[language=SQL, basicstyle=\ttfamily\small, frame=single, caption={SQL code for partitioned listings table}]
+CREATE TYPE listings.category_type AS ENUM (
+    'chocolate',
+    'fruity',
+    'tropical',
+    'caramel'
+);
+
+CREATE TABLE listings.listings (
+    id serial,
+    seller_id uuid NOT NULL REFERENCES profiles (id) ON DELETE CASCADE,
+    title varchar(255) NOT NULL,
+    description text,
+    category listings.category_type NOT NULL,
+    stock int NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    image_url varchar(255),
+    created_at timestamp DEFAULT CURRENT_TIMESTAMP,
+    is_active boolean DEFAULT TRUE,
+    PRIMARY KEY (id, category)
+)
+PARTITION BY LIST (category);
+
+CREATE TABLE listings.listings_chocolate PARTITION OF listings.listings
+FOR VALUES IN ('chocolate');
+
+CREATE TABLE listings.listings_fruity PARTITION OF listings.listings
+FOR VALUES IN ('fruity');
+
+CREATE TABLE listings.listings_tropical PARTITION OF listings.listings
+FOR VALUES IN ('tropical');
+
+CREATE TABLE listings.listings_caramel PARTITION OF listings.listings
+FOR VALUES IN ('caramel');
+\end{lstlisting}
+
+% References
+\chapter{References}
+\begin{enumerate}
+    \item Supabase Documentation: \url{https://supabase.com/docs}
+    \item Next.js Documentation: \url{https://nextjs.org/docs}
+    \item PostgreSQL Documentation: \url{https://www.postgresql.org/docs/}
+    \item React Documentation: \url{https://react.dev/}
+    \item TailwindCSS Documentation: \url{https://tailwindcss.com/docs}
+    \item shadcn/ui: \url{https://ui.shadcn.com/docs}
+    \item Jelato GitHub Repository: \url{https://github.com/KhalidAlansary/Jelato}
+\end{enumerate}
+
+\end{document}
