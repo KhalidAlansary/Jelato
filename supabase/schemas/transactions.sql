@@ -143,32 +143,37 @@ $$;
 -- get ID , title, seller_id ,category of best selling product
 -- THIS IS NOT TESTED YET
 CREATE OR REPLACE FUNCTION transactions.best_selling()
---- PLEASE CHECK DATA COMPATIBILITY
-    RETURNS TABLE(id INT, title VARCHAR(255), seller_id INT,category listings.category_type)
-    LANGUAGE plpgsql
-    AS $$
-    BEGIN
-        RETURN QUERY
+-- Returns information about the best-selling listing
+RETURNS TABLE(id INT, title VARCHAR(255), seller_id INT, category listings.category_type)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        l.id,
+        l.title,
+        l.seller_id,
+        l.category
+    FROM
+        listings.listings l
+    JOIN (
         SELECT
-            l.id,
-            l.title,
-            l.seller_id,
-            l.category
+            listing_id,
+            COUNT(*) AS sales_count
         FROM
-            listings.listings l
-        WHERE l.id=(
-            SELECT 
-                listing_id
-            FROM
-                transactions.transactions
-            GROUP BY
-                listing_id
-            ORDER BY
-                COUNT(listing_id) DESC
-            -- limit changes if we want to pick more products
-            LIMIT 1
-        );
-    END;    
+            transactions.transactions
+        GROUP BY
+            listing_id
+        ORDER BY
+            COUNT(*) DESC
+        LIMIT 1
+    ) AS top_sales ON l.id = top_sales.listing_id;
+
+       -- Log if no results found
+    IF NOT FOUND THEN
+        RAISE NOTICE 'No transactions or listings found';
+    END IF;
+END;
 $$;
 
 ----- returns id, first_name, last_name of top best selling Seller 
@@ -178,13 +183,13 @@ CREATE OR REPLACE FUNCTION transactions.Best_Selling_Seller()
     LANGUAGE plpgsql
     AS $$
     BEGIN 
-        RETURN QUERY,
+        RETURN QUERY
         SELECT 
             p.id,
             p.first_name,
             p.last_name
         FROM 
-            profiles.profiles p
+            public.profiles p
         WHERE
             p.id=(
                 SELECT 
@@ -199,7 +204,7 @@ CREATE OR REPLACE FUNCTION transactions.Best_Selling_Seller()
                 LIMIT 1
             );    
     END;
-$$
+$$;
 
 ----- returns id, first_name, last_name of top most loyal buyer 
 ----- NOT TESTED YET
@@ -208,13 +213,13 @@ CREATE OR REPLACE FUNCTION transactions.Most_Loyal_Buyer()
     LANGUAGE plpgsql
     AS $$
     BEGIN 
-        RETURN QUERY,
+        RETURN QUERY
         SELECT 
             p.id,
             p.first_name,
             p.last_name
         FROM 
-            profiles.profiles p
+            public.profiles p
         WHERE
             p.id=(
                 SELECT 
@@ -229,4 +234,4 @@ CREATE OR REPLACE FUNCTION transactions.Most_Loyal_Buyer()
                 LIMIT 1
             );    
     END;
-$$
+$$;
