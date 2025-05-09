@@ -137,24 +137,31 @@ CREATE FUNCTION transactions.deposit (amount DECIMAL(10, 2))
 $$;
 
 CREATE FUNCTION transactions.best_selling_ID()
-    RETURNS INT
+    RETURNS TABLE(ID INT, title TEXT, category TEXT)
     LANGUAGE plpgsql
     AS $$
     DECLARE
-        top_listing_id INT;
     BEGIN
+        RETURN QUERY
         SELECT
             -- get top 1 values, this can be changes
-            TOP 1,
-            listing_id INTO top_listing_id,
-            COUNT(listing_id) AS count_listings
+            l.id,
+            l.title,
+            l.seller_id,
+            l.category
         FROM
-            transactions.transactions
-        GROUP BY
-            listing_id
-        ORDER BY
-            count_listings DESC;
-        RETURNS top_listing_id
+            listings.listings l
+        WHERE l.id=(
+            SELECT 
+                listing_id,
+            FROM
+                transactions.transactions
+            GROUP BY
+                listing_id
+            ORDER BY
+                COUNT(listing_id) DESC
+            LIMIT 1
+        );
     END;    
 $$;
 
