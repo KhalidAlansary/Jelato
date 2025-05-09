@@ -261,6 +261,8 @@ CREATE TABLE transactions.transactions (
     created_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE transactions.transactions ENABLE ROW LEVEL SECURITY;
+
 CREATE FUNCTION transactions.purchase (listing_id int, listing_category listings.category_type)
     RETURNS void
     AS $$
@@ -353,6 +355,8 @@ CREATE TABLE transactions.deposits (
     amount DECIMAL(10, 2) NOT NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE transactions.deposits ENABLE ROW LEVEL SECURITY;
 
 CREATE FUNCTION transactions.deposit (amount DECIMAL(10, 2))
     RETURNS DECIMAL (
