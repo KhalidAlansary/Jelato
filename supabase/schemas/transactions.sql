@@ -143,37 +143,37 @@ $$;
 -- get ID , title, seller_id ,category of best selling product
 -- THIS IS NOT TESTED YET
 CREATE OR REPLACE FUNCTION transactions.best_selling()
--- Returns information about the best-selling listing
-RETURNS TABLE(id INT, title VARCHAR(255), seller_id INT, category listings.category_type)
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    RETURN QUERY
-    SELECT
-        l.id,
-        l.title,
-        l.seller_id,
-        l.category
-    FROM
-        listings.listings l
-    JOIN (
+    -- Returns information about the best-selling listing
+    RETURNS TABLE(id INT, title VARCHAR(255), seller_id uuid, category listings.category_type)
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+        RETURN QUERY
         SELECT
-            listing_id,
-            COUNT(*) AS sales_count
+            l.id,
+            l.title,
+            l.seller_id,
+            l.category
         FROM
-            transactions.transactions
-        GROUP BY
-            listing_id
-        ORDER BY
-            COUNT(*) DESC
-        LIMIT 1
-    ) AS top_sales ON l.id = top_sales.listing_id;
-
-       -- Log if no results found
-    IF NOT FOUND THEN
-        RAISE NOTICE 'No transactions or listings found';
-    END IF;
-END;
+            listings.listings l
+    
+        JOIN (
+            SELECT
+                listing_id,
+                COUNT(*) AS sales_count
+            FROM
+                transactions.transactions
+            GROUP BY
+                listing_id
+            ORDER BY
+                COUNT(*) DESC
+            LIMIT 1
+        ) AS top_sales ON l.id = top_sales.listing_id;
+        -- Log if no results found
+        IF NOT FOUND THEN
+            RAISE NOTICE 'No transactions or listings found';
+        END IF;
+    END;
 $$;
 
 ----- returns id, first_name, last_name of top best selling Seller 
