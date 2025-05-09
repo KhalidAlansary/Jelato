@@ -136,8 +136,10 @@ CREATE FUNCTION transactions.deposit (amount DECIMAL(10, 2))
         balance;
 $$;
 
-CREATE FUNCTION transactions.best_selling_ID()
-    RETURNS TABLE(ID INT, title TEXT, category TEXT)
+-- get ID , title, seller_id ,category of best selling product
+-- THIS IS NOT TESTED YET
+CREATE FUNCTION transactions.best_selling()
+    RETURNS TABLE(id INT, title TEXT, seller_id INT,category TEXT)
     LANGUAGE plpgsql
     AS $$
     DECLARE
@@ -160,6 +162,8 @@ CREATE FUNCTION transactions.best_selling_ID()
                 listing_id
             ORDER BY
                 COUNT(listing_id) DESC
+
+            -- limit changes if we want to pick more products
             LIMIT 1
         );
     END;    
