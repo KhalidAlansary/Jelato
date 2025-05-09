@@ -136,3 +136,23 @@ CREATE FUNCTION transactions.deposit (amount DECIMAL(10, 2))
         balance;
 $$;
 
+CREATE FUNCTION transactions.best_selling_ID()
+    RETURNS INT
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE
+        top_listing_id INT;
+    BEGIN
+        SELECT
+            -- get top 1 values, this can be changes
+            TOP 1,
+            listing_id INTO top_listing_id,
+            COUNT(listing_id) AS count_listings
+        FROM
+            transactions.transactions
+        GROUP BY
+            listing_id
+        ORDER BY
+            count_listings DESC;
+    END;    
+$$;
