@@ -136,17 +136,20 @@ CREATE FUNCTION transactions.deposit (amount DECIMAL(10, 2))
         balance;
 $$;
 
+----------------------------------------------------------------
+------------------ REPORT FUNCTIONS ----------------------------
+----------------------------------------------------------------
+
 -- get ID , title, seller_id ,category of best selling product
 -- THIS IS NOT TESTED YET
-CREATE FUNCTION transactions.best_selling()
-    RETURNS TABLE(id INT, title TEXT, seller_id INT,category TEXT)
+CREATE OR REPLACE FUNCTION transactions.best_selling()
+--- PLEASE CHECK DATA COMPATIBILITY
+    RETURNS TABLE(id INT, title VARCHAR(255), seller_id INT,category listings.category_type)
     LANGUAGE plpgsql
     AS $$
-    DECLARE
     BEGIN
         RETURN QUERY
         SELECT
-            -- get top 1 values, this can be changes
             l.id,
             l.title,
             l.seller_id,
@@ -155,17 +158,75 @@ CREATE FUNCTION transactions.best_selling()
             listings.listings l
         WHERE l.id=(
             SELECT 
-                listing_id,
+                listing_id
             FROM
                 transactions.transactions
             GROUP BY
                 listing_id
             ORDER BY
                 COUNT(listing_id) DESC
-
             -- limit changes if we want to pick more products
             LIMIT 1
         );
     END;    
 $$;
 
+----- returns id, first_name, last_name of top best selling Seller 
+----- NOT TESTED YET
+CREATE OR REPLACE FUNCTION transactions.Best_Selling_Seller()
+    RETURNS TABLE(id INT, first_name VARCHAR(50), last_name VARCHAR(50))
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN 
+        RETURN QUERY,
+        SELECT 
+            p.id,
+            p.first_name,
+            p.last_name
+        FROM 
+            profiles.profiles p
+        WHERE
+            p.id=(
+                SELECT 
+                    seller_id
+                FROM
+                    transactions.transactions
+                GROUP BY
+                    seller_id
+                ORDER BY
+                    COUNT(seller_id) DESC
+                --- change limits when wanting to show more sellers
+                LIMIT 1
+            );    
+    END;
+$$
+
+----- returns id, first_name, last_name of top most loyal buyer 
+----- NOT TESTED YET
+CREATE OR REPLACE FUNCTION transactions.Best_Selling_Seller()
+    RETURNS TABLE(id INT, first_name VARCHAR(50), last_name VARCHAR(50))
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN 
+        RETURN QUERY,
+        SELECT 
+            p.id,
+            p.first_name,
+            p.last_name
+        FROM 
+            profiles.profiles p
+        WHERE
+            p.id=(
+                SELECT 
+                    buyer_id
+                FROM
+                    transactions.transactions
+                GROUP BY
+                    buyer_id
+                ORDER BY
+                    COUNT(buyer_id) DESC
+                --- change limits when wanting to show more sellers
+                LIMIT 1
+            );    
+    END;
+$$
