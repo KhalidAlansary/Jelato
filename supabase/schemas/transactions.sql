@@ -154,5 +154,7 @@ CREATE FUNCTION transactions.best_selling_ID()
             listing_id
         ORDER BY
             count_listings DESC;
+        RETURNS top_listing_id
     END;    
 $$;
+
