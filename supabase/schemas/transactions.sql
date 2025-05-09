@@ -179,7 +179,7 @@ $$;
 ----- returns id, first_name, last_name of top best selling Seller 
 ----- NOT TESTED YET
 CREATE OR REPLACE FUNCTION transactions.Best_Selling_Seller()
-    RETURNS TABLE(id INT, first_name VARCHAR(50), last_name VARCHAR(50))
+    RETURNS TABLE(id uuid, first_name VARCHAR(50), last_name VARCHAR(50))
     LANGUAGE plpgsql
     AS $$
     BEGIN 
@@ -190,26 +190,25 @@ CREATE OR REPLACE FUNCTION transactions.Best_Selling_Seller()
             p.last_name
         FROM 
             public.profiles p
-        WHERE
-            p.id=(
-                SELECT 
-                    seller_id
-                FROM
-                    transactions.transactions
-                GROUP BY
-                    seller_id
-                ORDER BY
-                    COUNT(seller_id) DESC
-                --- change limits when wanting to show more sellers
-                LIMIT 1
-            );    
+        JOIN (
+            SELECT 
+                seller_id
+            FROM
+                transactions.transactions
+            GROUP BY
+                seller_id
+            ORDER BY
+                COUNT(seller_id) DESC
+            --- change limits when wanting to show more sellers
+            LIMIT 1
+        ) AS top_seller_user ON p.id = top_seller_user.seller_id;    
     END;
 $$;
 
 ----- returns id, first_name, last_name of top most loyal buyer 
 ----- NOT TESTED YET
 CREATE OR REPLACE FUNCTION transactions.Most_Loyal_Buyer()
-    RETURNS TABLE(id INT, first_name VARCHAR(50), last_name VARCHAR(50))
+    RETURNS TABLE(id uuid, first_name VARCHAR(50), last_name VARCHAR(50))
     LANGUAGE plpgsql
     AS $$
     BEGIN 
@@ -220,8 +219,7 @@ CREATE OR REPLACE FUNCTION transactions.Most_Loyal_Buyer()
             p.last_name
         FROM 
             public.profiles p
-        WHERE
-            p.id=(
+        JOIN(
                 SELECT 
                     buyer_id
                 FROM
@@ -232,6 +230,6 @@ CREATE OR REPLACE FUNCTION transactions.Most_Loyal_Buyer()
                     COUNT(buyer_id) DESC
                 --- change limits when wanting to show more sellers
                 LIMIT 1
-            );    
+            ) AS best_buyer ON p.id = best_buyer.buyer_id;    
     END;
 $$;
