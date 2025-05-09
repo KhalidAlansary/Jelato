@@ -203,7 +203,7 @@ $$
 
 ----- returns id, first_name, last_name of top most loyal buyer 
 ----- NOT TESTED YET
-CREATE OR REPLACE FUNCTION transactions.Best_Selling_Seller()
+CREATE OR REPLACE FUNCTION transactions.Most_Loyal_Buyer()
     RETURNS TABLE(id INT, first_name VARCHAR(50), last_name VARCHAR(50))
     LANGUAGE plpgsql
     AS $$
