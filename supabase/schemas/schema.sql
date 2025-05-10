@@ -1,7 +1,6 @@
 -- =========================
 -- 1. Profiles Schema
 -- =========================
-
 CREATE TABLE profiles (
     id uuid NOT NULL PRIMARY KEY REFERENCES auth.users ON DELETE CASCADE,
     first_name varchar(50) NOT NULL,
@@ -45,7 +44,6 @@ CREATE TRIGGER on_auth_user_created
 -- =========================
 -- 2. Listings Schema
 -- =========================
-
 CREATE SCHEMA listings;
 
 -- Expose schema
@@ -232,12 +230,9 @@ CREATE POLICY "Users can delete their own caramel listings" ON listings.listings
             SELECT
                 auth.uid ()) = seller_id);
 
-
-
 -- =========================
 -- 3. Transactions Schema
 -- =========================
-
 CREATE SCHEMA transactions;
 
 -- Expose schema
@@ -265,6 +260,8 @@ CREATE TABLE transactions.transactions (
     amount DECIMAL(10, 2) NOT NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE transactions.transactions ENABLE ROW LEVEL SECURITY;
 
 CREATE FUNCTION transactions.purchase (listing_id int, listing_category listings.category_type)
     RETURNS void
@@ -358,6 +355,8 @@ CREATE TABLE transactions.deposits (
     amount DECIMAL(10, 2) NOT NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE transactions.deposits ENABLE ROW LEVEL SECURITY;
 
 CREATE FUNCTION transactions.deposit (amount DECIMAL(10, 2))
     RETURNS DECIMAL (
