@@ -378,25 +378,28 @@ $$;
 ----------------------------------------------------------------
 ------------------ REPORT FUNCTIONS ----------------------------
 ----------------------------------------------------------------
-
 -- get ID , title, seller_id ,category of best selling product
 -- THIS IS NOT TESTED YET
-CREATE OR REPLACE FUNCTION transactions.best_selling()
-    -- Returns information about the best-selling listing
-    RETURNS TABLE(id INT, title VARCHAR(255), seller_id uuid, category listings.category_type, sales_count BIGINT)
+CREATE OR REPLACE FUNCTION transactions.best_selling ()
+-- Returns information about the best-selling listing
+    RETURNS TABLE (
+        id int,
+        title varchar(255),
+        seller_id uuid,
+        category listings.category_type,
+        sales_count bigint)
     LANGUAGE plpgsql
     AS $$
-    BEGIN
-        RETURN QUERY
-        SELECT
-            l.id,
-            l.title,
-            l.seller_id,
-            l.category,
-            top_sales.sales_count
-        FROM
-            listings.listings l
-    
+BEGIN
+    RETURN QUERY
+    SELECT
+        l.id,
+        l.title,
+        l.seller_id,
+        l.category,
+        top_sales.sales_count
+    FROM
+        listings.listings l
         JOIN (
             SELECT
                 listing_id,
@@ -407,73 +410,79 @@ CREATE OR REPLACE FUNCTION transactions.best_selling()
                 listing_id
             ORDER BY
                 COUNT(*) DESC
-            LIMIT 1
-        ) AS top_sales ON l.id = top_sales.listing_id;
-        -- Log if no results found
-        IF NOT FOUND THEN
-            RAISE NOTICE 'No transactions or listings found';
-        END IF;
-    END;
+            LIMIT 1) AS top_sales ON l.id = top_sales.listing_id;
+    -- Log if no results found
+    IF NOT FOUND THEN
+        RAISE NOTICE 'No transactions or listings found';
+    END IF;
+END;
 $$;
 
------ returns id, first_name, last_name of top best selling Seller 
+----- returns id, first_name, last_name of top best selling Seller
 ----- NOT TESTED YET
-CREATE OR REPLACE FUNCTION transactions.Best_Selling_Seller()
-    RETURNS TABLE(id uuid, first_name VARCHAR(50), last_name VARCHAR(50), sales_count BIGINT)
+CREATE OR REPLACE FUNCTION transactions.Best_Selling_Seller ()
+    RETURNS TABLE (
+        id uuid,
+        first_name varchar(50),
+        last_name varchar(50),
+        sales_count bigint)
     LANGUAGE plpgsql
     AS $$
-    BEGIN 
-        RETURN QUERY
-        SELECT 
-            p.id,
-            p.first_name,
-            p.last_name,
-            top_seller_user.sales_count
-        FROM 
-            public.profiles p
+BEGIN
+    RETURN QUERY
+    SELECT
+        p.id,
+        p.first_name,
+        p.last_name,
+        top_seller_user.sales_count
+    FROM
+        public.profiles p
         JOIN (
-            SELECT 
+            SELECT
                 seller_id,
-                COUNT(seller_id) as sales_count 
+                COUNT(seller_id) AS sales_count
             FROM
                 transactions.transactions
             GROUP BY
                 seller_id
             ORDER BY
                 COUNT(seller_id) DESC
-            --- change limits when wanting to show more sellers
-            LIMIT 1
-        ) AS top_seller_user ON p.id = top_seller_user.seller_id;    
-    END;
+                --- change limits when wanting to show more sellers
+            LIMIT 1) AS top_seller_user ON p.id = top_seller_user.seller_id;
+END;
 $$;
 
------ returns id, first_name, last_name of top most loyal buyer 
+----- returns id, first_name, last_name of top most loyal buyer
 ----- NOT TESTED YET
-CREATE OR REPLACE FUNCTION transactions.Most_Loyal_Buyer()
-    RETURNS TABLE(id uuid, first_name VARCHAR(50), last_name VARCHAR(50), sales_count BIGINT)
+CREATE OR REPLACE FUNCTION transactions.Most_Loyal_Buyer ()
+    RETURNS TABLE (
+        id uuid,
+        first_name varchar(50),
+        last_name varchar(50),
+        sales_count bigint)
     LANGUAGE plpgsql
     AS $$
-    BEGIN 
-        RETURN QUERY
-        SELECT 
-            p.id,
-            p.first_name,
-            p.last_name,
-            best_buyer.sales_count
-        FROM 
-            public.profiles p
-        JOIN(
-                SELECT 
-                    buyer_id,
-                    COUNT(buyer_id) AS sales_count
-                FROM
-                    transactions.transactions
-                GROUP BY
-                    buyer_id
-                ORDER BY
-                    COUNT(buyer_id) DESC
+BEGIN
+    RETURN QUERY
+    SELECT
+        p.id,
+        p.first_name,
+        p.last_name,
+        best_buyer.sales_count
+    FROM
+        public.profiles p
+        JOIN (
+            SELECT
+                buyer_id,
+                COUNT(buyer_id) AS sales_count
+            FROM
+                transactions.transactions
+            GROUP BY
+                buyer_id
+            ORDER BY
+                COUNT(buyer_id) DESC
                 --- change limits when wanting to show more sellers
-                LIMIT 1
-            ) AS best_buyer ON p.id = best_buyer.buyer_id;    
-    END;
+            LIMIT 1) AS best_buyer ON p.id = best_buyer.buyer_id;
+END;
 $$;
+
