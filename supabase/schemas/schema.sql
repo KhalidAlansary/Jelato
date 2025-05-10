@@ -405,7 +405,7 @@ BEGIN
                 listing_id,
                 COUNT(*) AS sales_count
             FROM
-                transactions.transactions
+                transactions.transactionstarget is at 3 
             GROUP BY
                 listing_id
             ORDER BY
@@ -453,7 +453,7 @@ END;
 $$;
 
 ----- returns id, first_name, last_name of top most loyal buyer
------ NOT TESTED YET
+----- NOT TESThED YET
 CREATE OR REPLACE FUNCTION transactions.Most_Loyal_Buyer ()
     RETURNS TABLE (
         id uuid,
@@ -486,3 +486,43 @@ BEGIN
 END;
 $$;
 
+---------------------------------------------------------------
+----------------------- Per_User_Reports ----------------------
+-----------------Description; handles favorite flavors, 
+-- ---------------------------recent activity, recent transactions
+-------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION transactions.Recent_Transactions(
+    user_ID uuid
+) RETURNS TABLE(
+    transaction_type TEXT, 
+    transaction_amount DECIMAL(10,2),
+    transaction_date timestamp,
+    -- can be null if transaction is Deposit
+    product_name VARCHAR(255)
+)
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN QUERY
+    -- Products Bought by User
+    -- DESC: Query Bought & Sold Products by User
+    -- NB: DEPOSIT IS NOT SUPPORTED YET
+    SELECT
+        CASE 
+            -- bought by USER, leads to a deduction in his account balance
+            WHEN t.buyer_id = user_ID THEN 'bought'
+            -- sold by User, leads to an addition to his acc balance
+            WHEN t.seller_id = user_ID THEN 'sold'
+        END AS transaction_type,
+        t.amount,
+        t.created_at,
+        l.title AS product_name
+    FROM 
+        transactions.transactions t
+    JOIN
+        listings.listings l ON t.listing_id=l.id
+    WHERE
+        t.buyer_id=user_ID OR t.seller_id=user_ID
+    ORDER BY t.created_at DESC;
+END;
+$$;
