@@ -513,7 +513,7 @@ $$;
 ---------- RECENT TRANNSACTIONS ------------------------------
 ------------ pass user id and get his recent transactions -------
 CREATE OR REPLACE FUNCTION transactions.Recent_Transactions(
-    user_ID uuid
+    current_user_ID uuid
 ) RETURNS TABLE(
     transaction_type TEXT, 
     transaction_amount DECIMAL(10,2),
@@ -530,9 +530,9 @@ BEGIN
     SELECT
         CASE 
             -- bought by USER, leads to a deduction in his account balance
-            WHEN t.buyer_id = user_ID THEN 'bought'
+            WHEN t.buyer_id = current_user_ID THEN 'bought'
             -- sold by User, leads to an addition to his acc balance
-            WHEN t.seller_id = user_ID THEN 'sold'
+            WHEN t.seller_id = current_user_ID THEN 'sold'
         END AS transaction_type,
         t.amount,
         t.created_at,
@@ -542,8 +542,21 @@ BEGIN
     JOIN
         listings.listings l ON t.listing_id=l.id
     WHERE
-        t.buyer_id=user_ID OR t.seller_id=user_ID
-    ORDER BY t.created_at DESC;
+        t.buyer_id=current_user_ID OR t.seller_id=current_user_ID
+    
+    UNION
+    -- New Deposits by USER
+    SELECT
+        'Depositted' as activity_type,
+        d.amount,
+        d.created_at,
+        NULL AS product_name
+    FROM 
+        transactions.deposits d
+    WHERE
+        d.user_id = current_user_ID
+
+    ORDER BY created_at DESC;
 END;
 $$;
 
