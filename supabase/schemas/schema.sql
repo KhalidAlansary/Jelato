@@ -361,18 +361,34 @@ ALTER TABLE transactions.deposits ENABLE ROW LEVEL SECURITY;
 CREATE FUNCTION transactions.deposit (amount DECIMAL(10, 2))
     RETURNS DECIMAL (
         10, 2)
-    LANGUAGE sql
+    LANGUAGE plpgsql
+    SECURITY DEFINER
     AS $$
+DECLARE
+    new_balance DECIMAL(10,2);
+    current_id UUID := auth.uid();
+BEGIN
     UPDATE
         profiles
     SET
         balance = balance + amount
     WHERE
-        id = (
-            SELECT
-                auth.uid ())
+        id = current_id
+
     RETURNING
-        balance;
+        balance INTO new_balance;
+    -- update deposits table
+    INSERT INTO transactions.deposits(
+        user_id,
+        amount
+    ) VALUES (
+        current_id,
+        amount
+    );
+
+    RETURN 
+        new_balance;
+END;
 $$;
 
 ----------------------------------------------------------------
