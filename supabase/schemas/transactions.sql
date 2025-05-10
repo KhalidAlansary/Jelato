@@ -144,7 +144,7 @@ $$;
 -- THIS IS NOT TESTED YET
 CREATE OR REPLACE FUNCTION transactions.best_selling()
     -- Returns information about the best-selling listing
-    RETURNS TABLE(id INT, title VARCHAR(255), seller_id uuid, category listings.category_type)
+    RETURNS TABLE(id INT, title VARCHAR(255), seller_id uuid, category listings.category_type, sales_count BIGINT)
     LANGUAGE plpgsql
     AS $$
     BEGIN
@@ -153,7 +153,8 @@ CREATE OR REPLACE FUNCTION transactions.best_selling()
             l.id,
             l.title,
             l.seller_id,
-            l.category
+            l.category,
+            top_sales.sales_count
         FROM
             listings.listings l
     
@@ -179,7 +180,7 @@ $$;
 ----- returns id, first_name, last_name of top best selling Seller 
 ----- NOT TESTED YET
 CREATE OR REPLACE FUNCTION transactions.Best_Selling_Seller()
-    RETURNS TABLE(id uuid, first_name VARCHAR(50), last_name VARCHAR(50))
+    RETURNS TABLE(id uuid, first_name VARCHAR(50), last_name VARCHAR(50), sales_count BIGINT)
     LANGUAGE plpgsql
     AS $$
     BEGIN 
@@ -187,12 +188,14 @@ CREATE OR REPLACE FUNCTION transactions.Best_Selling_Seller()
         SELECT 
             p.id,
             p.first_name,
-            p.last_name
+            p.last_name,
+            top_seller_user.sales_count
         FROM 
             public.profiles p
         JOIN (
             SELECT 
-                seller_id
+                seller_id,
+                COUNT(seller_id) as sales_count 
             FROM
                 transactions.transactions
             GROUP BY
@@ -208,7 +211,7 @@ $$;
 ----- returns id, first_name, last_name of top most loyal buyer 
 ----- NOT TESTED YET
 CREATE OR REPLACE FUNCTION transactions.Most_Loyal_Buyer()
-    RETURNS TABLE(id uuid, first_name VARCHAR(50), last_name VARCHAR(50))
+    RETURNS TABLE(id uuid, first_name VARCHAR(50), last_name VARCHAR(50), sales_count BIGINT)
     LANGUAGE plpgsql
     AS $$
     BEGIN 
@@ -216,12 +219,14 @@ CREATE OR REPLACE FUNCTION transactions.Most_Loyal_Buyer()
         SELECT 
             p.id,
             p.first_name,
-            p.last_name
+            p.last_name,
+            best_buyer.sales_count
         FROM 
             public.profiles p
         JOIN(
                 SELECT 
-                    buyer_id
+                    buyer_id,
+                    COUNT(buyer_id) AS sales_count
                 FROM
                     transactions.transactions
                 GROUP BY
