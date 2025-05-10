@@ -552,7 +552,7 @@ $$;
 ------------------------------------------------------
 ----------- RECENT ACTIVITY --------------------------
 CREATE OR REPLACE FUNCTION transactions.Recent_Activity(
-    user_ID uuid
+    current_user_ID uuid
 ) RETURNS TABLE(
     activity_type TEXT, 
     activity_amount DECIMAL(10,2),
@@ -577,7 +577,7 @@ BEGIN
     JOIN
         listings.listings l ON t.listing_id=l.id
     WHERE
-        t.buyer_id=user_ID
+        t.buyer_id=current_user_ID
 
     UNION
     -- New Listings By User
@@ -589,8 +589,20 @@ BEGIN
     FROM 
         listings.listings l
     WHERE
-        l.seller_id=user_ID
+        l.seller_id=current_user_ID
 
+    UNION 
+    -- New Deposits by USER
+        SELECT
+        'Depositted' as activity_type,
+        d.amount,
+        d.created_at,
+        NULL AS product_name
+    FROM 
+        transactions.deposits d
+    WHERE
+        d.user_id = current_user_ID
+    
     ORDER BY created_at DESC;
 END;
 $$;
