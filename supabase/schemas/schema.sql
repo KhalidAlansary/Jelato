@@ -576,8 +576,42 @@ BEGIN
         l.seller_id=user_ID
 
     ORDER BY created_at DESC;
-
-
-
 END;
 $$;
+
+
+---------------------------------------------------------------------
+------------ Favorite Flavors ---------------------------------------
+---------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION transactions.favorite_flavours(
+    user_ID uuid
+) RETURNS TABLE(
+    product_name VARCHAR(255),
+    product_description TEXT,
+    product_category listings.category_type
+)
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN QUERY
+    
+    -- Most bought products by user
+    SELECT
+        l.title,
+        l.description,
+        l.category
+    FROM 
+        transactions.transactions t
+    JOIN
+        listings.listings l ON t.listing_id=l.id
+    WHERE
+        t.buyer_id=user_ID
+    GROUP BY
+      t.buyer_id, l.title, l.description, l.category
+    ORDER BY 
+        COUNT(t.buyer_id) DESC
+    -- Only return top 2 flavors
+    LIMIT 2;
+END;
+$$;
+
