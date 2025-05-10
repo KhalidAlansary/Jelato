@@ -491,6 +491,11 @@ $$;
 -----------------Description; handles favorite flavors, 
 -- ---------------------------recent activity, recent transactions
 -------------------------------------------------------------------
+
+
+--------------------------------------------------------------
+---------- RECENT TRANNSACTIONS ------------------------------
+------------ pass user id and get his recent transactions -------
 CREATE OR REPLACE FUNCTION transactions.Recent_Transactions(
     user_ID uuid
 ) RETURNS TABLE(
@@ -504,7 +509,6 @@ CREATE OR REPLACE FUNCTION transactions.Recent_Transactions(
     AS $$
 BEGIN
     RETURN QUERY
-    -- Products Bought by User
     -- DESC: Query Bought & Sold Products by User
     -- NB: DEPOSIT IS NOT SUPPORTED YET
     SELECT
@@ -524,5 +528,56 @@ BEGIN
     WHERE
         t.buyer_id=user_ID OR t.seller_id=user_ID
     ORDER BY t.created_at DESC;
+END;
+$$;
+
+
+
+------------------------------------------------------
+----------- RECENT ACTIVITY --------------------------
+CREATE OR REPLACE FUNCTION transactions.Recent_Activity(
+    user_ID uuid
+) RETURNS TABLE(
+    activity_type TEXT, 
+    activity_amount DECIMAL(10,2),
+    activity_date timestamp,
+    -- can be null if activity is Deposit
+    product_name VARCHAR(255)
+)
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN QUERY
+    
+    -- Recently Bought Products by User 
+    SELECT
+        -- bought by USER, leads to a deduction in his account balance
+        'bought' as activity_type,
+        t.amount,
+        t.created_at,
+        l.title AS product_name
+    FROM 
+        transactions.transactions t
+    JOIN
+        listings.listings l ON t.listing_id=l.id
+    WHERE
+        t.buyer_id=user_ID
+
+    UNION
+    -- New Listings By User
+    SELECT
+        'Added Listing' as activity_type,
+        l.price,
+        l.created_at,
+        l.title AS product_name
+    FROM 
+        listings.listings l
+    WHERE
+        l.seller_id=user_ID
+
+    ORDER BY created_at DESC;
+
+
+
 END;
 $$;
