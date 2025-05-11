@@ -5,14 +5,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import supabase from "@/utils/supabase/client";
 import { Database } from "@/utils/supabase/database.types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { StarIcon, IceCream, History, Settings, Package } from "lucide-react";
+import { IceCream, History, Package } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -111,21 +109,15 @@ export default function ProfilePage() {
                 {firstName} {lastName}
               </h1>
               <p className="text-muted-foreground">Joined on {createdAt}</p>
-              <div className="flex items-center gap-2 mt-2">
-                <StarIcon className="h-4 w-4 fill-yellow-500 text-yellow-500" />
-                <span>4.9 Rating</span>
-                <span className="text-muted-foreground">• 50 Reviews</span>
-              </div>
             </div>
             <Button>Edit Profile</Button>
           </div>
 
           <Tabs defaultValue="listings">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="listings">My Listings</TabsTrigger>
               <TabsTrigger value="activity">Activity</TabsTrigger>
               <TabsTrigger value="favourites">Favourites</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
 
             <TabsContent value="listings" className="mt-6">
@@ -348,47 +340,6 @@ export default function ProfilePage() {
                       ))}
                     </div>
                   )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="settings" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Settings className="h-5 w-5" />
-                    Account Settings
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <Label className="text-sm font-medium">
-                        Display Name
-                      </Label>
-                      <Input
-                        type="text"
-                        className="w-full mt-1"
-                        defaultValue="John's Ice Cream"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium">
-                        Email Notifications
-                      </Label>
-                      <div className="mt-2 space-y-2">
-                        <Label className="flex items-center gap-2">
-                          <Input type="checkbox" defaultChecked />
-                          <span>New flavour releases</span>
-                        </Label>
-                        <Label className="flex items-center gap-2">
-                          <Input type="checkbox" defaultChecked />
-                          <span>New reviews</span>
-                        </Label>
-                      </div>
-                    </div>
-                    <Button>Save Changes</Button>
-                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
