@@ -510,13 +510,13 @@ $$;
 ---------- RECENT TRANNSACTIONS ------------------------------
 ------------ pass user id and get his recent transactions -------
 CREATE OR REPLACE FUNCTION transactions.Recent_Transactions() 
-RETURNS TABLE(
-    transaction_type TEXT, 
-    transaction_amount DECIMAL(10,2),
-    transaction_date timestamp,
-    -- can be null if transaction is Deposit
-    product_name VARCHAR(255)
-)
+    RETURNS TABLE(
+        transaction_type TEXT, 
+        transaction_amount DECIMAL(10,2),
+        transaction_date timestamp,
+        -- can be null if transaction is Deposit
+        product_name VARCHAR(255)
+    )
     LANGUAGE plpgsql
     SECURITY DEFINER
     AS $$
