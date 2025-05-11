@@ -1,7 +1,7 @@
 -- =========================
 -- 1. Profiles Schema
 -- =========================
-CREATE TABLE profiles (
+CREATE TABLE IF NOT EXISTS profiles (
     id uuid NOT NULL PRIMARY KEY REFERENCES auth.users ON DELETE CASCADE,
     first_name varchar(50) NOT NULL,
     last_name varchar(50) NOT NULL,
@@ -23,7 +23,7 @@ CREATE POLICY "Users can update their own profiles" ON profiles
                 SELECT
                     auth.uid ()) = id);
 
-CREATE FUNCTION create_profile ()
+CREATE OR REPLACE FUNCTION create_profile ()
     RETURNS TRIGGER
     LANGUAGE plpgsql
     SECURITY DEFINER
@@ -68,7 +68,7 @@ CREATE TYPE listings.category_type AS ENUM (
     'caramel'
 );
 
-CREATE TABLE listings.listings (
+CREATE TABLE IF NOT EXISTS listings.listings (
     id serial,
     seller_id uuid NOT NULL REFERENCES profiles (id) ON DELETE CASCADE,
     title varchar(255) NOT NULL,
@@ -110,7 +110,7 @@ CREATE POLICY "Users can delete their own listings" ON listings.listings
             SELECT
                 auth.uid ()) = seller_id);
 
-CREATE TABLE listings.listings_chocolate PARTITION OF listings.listings
+CREATE TABLE IF NOT EXISTS listings.listings_chocolate PARTITION OF listings.listings
 FOR VALUES IN ('chocolate');
 
 ALTER TABLE listings.listings_chocolate ENABLE ROW LEVEL SECURITY;
@@ -140,7 +140,7 @@ CREATE POLICY "Users can delete their own chocolate listings" ON listings.listin
             SELECT
                 auth.uid ()) = seller_id);
 
-CREATE TABLE listings.listings_fruity PARTITION OF listings.listings
+CREATE TABLE IF NOT EXISTS listings.listings_fruity PARTITION OF listings.listings
 FOR VALUES IN ('fruity');
 
 ALTER TABLE listings.listings_fruity ENABLE ROW LEVEL SECURITY;
@@ -170,7 +170,7 @@ CREATE POLICY "Users can delete their own fruity listings" ON listings.listings_
             SELECT
                 auth.uid ()) = seller_id);
 
-CREATE TABLE listings.listings_tropical PARTITION OF listings.listings
+CREATE TABLE IF NOT EXISTS listings.listings_tropical PARTITION OF listings.listings
 FOR VALUES IN ('tropical');
 
 ALTER TABLE listings.listings_tropical ENABLE ROW LEVEL SECURITY;
@@ -200,7 +200,7 @@ CREATE POLICY "Users can delete their own tropical listings" ON listings.listing
             SELECT
                 auth.uid ()) = seller_id);
 
-CREATE TABLE listings.listings_caramel PARTITION OF listings.listings
+CREATE TABLE IF NOT EXISTS listings.listings_caramel PARTITION OF listings.listings
 FOR VALUES IN ('caramel');
 
 ALTER TABLE listings.listings_caramel ENABLE ROW LEVEL SECURITY;
@@ -250,7 +250,7 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA transactions GRANT ALL ON R
 
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA transactions GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
 
-CREATE TABLE transactions.transactions (
+CREATE TABLE IF NOT EXISTS transactions.transactions (
     id serial PRIMARY KEY,
     buyer_id uuid REFERENCES profiles (id) ON DELETE SET NULL,
     seller_id uuid REFERENCES profiles (id) ON DELETE SET NULL,
@@ -263,7 +263,7 @@ CREATE TABLE transactions.transactions (
 
 ALTER TABLE transactions.transactions ENABLE ROW LEVEL SECURITY;
 
-CREATE FUNCTION transactions.purchase (listing_id int, listing_category listings.category_type)
+CREATE OR REPLACE FUNCTION transactions.purchase (listing_id int, listing_category listings.category_type)
     RETURNS void
     AS $$
 DECLARE
@@ -349,7 +349,7 @@ REVOKE EXECUTE ON FUNCTION transactions.purchase FROM public;
 
 REVOKE EXECUTE ON FUNCTION transactions.purchase FROM anon;
 
-CREATE TABLE transactions.deposits (
+CREATE TABLE IF NOT EXISTS transactions.deposits (
     id serial PRIMARY KEY,
     user_id uuid REFERENCES profiles (id) ON DELETE SET NULL,
     amount DECIMAL(10, 2) NOT NULL,
@@ -358,7 +358,7 @@ CREATE TABLE transactions.deposits (
 
 ALTER TABLE transactions.deposits ENABLE ROW LEVEL SECURITY;
 
-CREATE FUNCTION transactions.deposit (amount DECIMAL(10, 2))
+CREATE OR REPLACE FUNCTION transactions.deposit (amount DECIMAL(10, 2))
     RETURNS DECIMAL (
         10, 2)
     LANGUAGE plpgsql
