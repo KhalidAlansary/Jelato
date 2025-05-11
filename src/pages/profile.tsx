@@ -102,7 +102,10 @@ export default function ProfilePage() {
           <div className="flex items-start gap-6 mb-8">
             <Avatar className="h-24 w-24">
               <AvatarImage src="/placeholder.svg" />
-              <AvatarFallback>JD</AvatarFallback>
+              <AvatarFallback>
+                {user?.user_metadata.firstName[0]}
+                {user?.user_metadata.lastName[0]}
+              </AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <h1 className="text-3xl font-bold">
