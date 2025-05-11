@@ -421,7 +421,7 @@ BEGIN
                 listing_id,
                 COUNT(*) AS sales_count
             FROM
-                transactions.transactionstarget is at 3 
+                transactions.transactions 
             GROUP BY
                 listing_id
             ORDER BY
@@ -435,7 +435,6 @@ END;
 $$;
 
 ----- returns id, first_name, last_name of top best selling Seller
------ NOT TESTED YET
 CREATE OR REPLACE FUNCTION transactions.Best_Selling_Seller ()
     RETURNS TABLE (
         id uuid,
@@ -469,7 +468,6 @@ END;
 $$;
 
 ----- returns id, first_name, last_name of top most loyal buyer
------ NOT TESThED YET
 CREATE OR REPLACE FUNCTION transactions.Most_Loyal_Buyer ()
     RETURNS TABLE (
         id uuid,
@@ -512,9 +510,8 @@ $$;
 --------------------------------------------------------------
 ---------- RECENT TRANNSACTIONS ------------------------------
 ------------ pass user id and get his recent transactions -------
-CREATE OR REPLACE FUNCTION transactions.Recent_Transactions(
-    current_user_ID uuid
-) RETURNS TABLE(
+CREATE OR REPLACE FUNCTION transactions.Recent_Transactions() 
+RETURNS TABLE(
     transaction_type TEXT, 
     transaction_amount DECIMAL(10,2),
     transaction_date timestamp,
@@ -522,17 +519,19 @@ CREATE OR REPLACE FUNCTION transactions.Recent_Transactions(
     product_name VARCHAR(255)
 )
     LANGUAGE plpgsql
+    SECURITY DEFINER
     AS $$
+DECLARE
+    current_id UUID := auth.uid();
 BEGIN
     RETURN QUERY
     -- DESC: Query Bought & Sold Products by User
-    -- NB: DEPOSIT IS NOT SUPPORTED YET
     SELECT
         CASE 
             -- bought by USER, leads to a deduction in his account balance
-            WHEN t.buyer_id = current_user_ID THEN 'bought'
+            WHEN t.buyer_id = current_ID THEN 'bought'
             -- sold by User, leads to an addition to his acc balance
-            WHEN t.seller_id = current_user_ID THEN 'sold'
+            WHEN t.seller_id = current_ID THEN 'sold'
         END AS transaction_type,
         t.amount,
         t.created_at,
@@ -542,7 +541,7 @@ BEGIN
     JOIN
         listings.listings l ON t.listing_id=l.id
     WHERE
-        t.buyer_id=current_user_ID OR t.seller_id=current_user_ID
+        t.buyer_id=current_ID OR t.seller_id=current_ID
     
     UNION
     -- New Deposits by USER
@@ -554,9 +553,11 @@ BEGIN
     FROM 
         transactions.deposits d
     WHERE
-        d.user_id = current_user_ID
+        d.user_id = current_ID
 
-    ORDER BY created_at DESC;
+    ORDER BY created_at DESC
+    --  can be changed to show more
+    LIMIT 5;
 END;
 $$;
 
@@ -564,9 +565,8 @@ $$;
 
 ------------------------------------------------------
 ----------- RECENT ACTIVITY --------------------------
-CREATE OR REPLACE FUNCTION transactions.Recent_Activity(
-    current_user_ID uuid
-) RETURNS TABLE(
+CREATE OR REPLACE FUNCTION transactions.Recent_Activity() 
+RETURNS TABLE(
     activity_type TEXT, 
     activity_amount DECIMAL(10,2),
     activity_date timestamp,
@@ -574,7 +574,10 @@ CREATE OR REPLACE FUNCTION transactions.Recent_Activity(
     product_name VARCHAR(255)
 )
     LANGUAGE plpgsql
+    SECURITY DEFINER
     AS $$
+DECLARE
+    current_id UUID := auth.uid();
 BEGIN
     RETURN QUERY
     
@@ -590,7 +593,7 @@ BEGIN
     JOIN
         listings.listings l ON t.listing_id=l.id
     WHERE
-        t.buyer_id=current_user_ID
+        t.buyer_id = current_id
 
     UNION
     -- New Listings By User
@@ -602,11 +605,11 @@ BEGIN
     FROM 
         listings.listings l
     WHERE
-        l.seller_id=current_user_ID
+        l.seller_id = current_id
 
     UNION 
     -- New Deposits by USER
-        SELECT
+    SELECT
         'Depositted' as activity_type,
         d.amount,
         d.created_at,
@@ -614,9 +617,10 @@ BEGIN
     FROM 
         transactions.deposits d
     WHERE
-        d.user_id = current_user_ID
+        d.user_id = current_id
     
-    ORDER BY created_at DESC;
+    ORDER BY created_at DESC
+    LIMIT 5;
 END;
 $$;
 
