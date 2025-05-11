@@ -361,25 +361,32 @@ ALTER TABLE transactions.deposits ENABLE ROW LEVEL SECURITY;
 CREATE FUNCTION transactions.deposit (amount DECIMAL(10, 2))
     RETURNS DECIMAL (
         10, 2)
-    LANGUAGE sql
+    LANGUAGE plpgsql
+    SECURITY DEFINER
     AS $$
+DECLARE
+    new_balance DECIMAL(10, 2);
+    current_id uuid := auth.uid ();
+BEGIN
     UPDATE
         profiles
     SET
         balance = balance + amount
     WHERE
-        id = (
-            SELECT
-                auth.uid ())
+        id = current_id
     RETURNING
-        balance;
+        balance INTO new_balance;
+    -- update deposits table
+    INSERT INTO transactions.deposits (user_id, amount)
+        VALUES (current_id, amount);
+    RETURN new_balance;
+END;
 $$;
 
 ----------------------------------------------------------------
 ------------------ REPORT FUNCTIONS ----------------------------
 ----------------------------------------------------------------
 -- get ID , title, seller_id ,category of best selling product
--- THIS IS NOT TESTED YET
 CREATE OR REPLACE FUNCTION transactions.best_selling ()
 -- Returns information about the best-selling listing
     RETURNS TABLE (
@@ -419,7 +426,6 @@ END;
 $$;
 
 ----- returns id, first_name, last_name of top best selling Seller
------ NOT TESTED YET
 CREATE OR REPLACE FUNCTION transactions.Best_Selling_Seller ()
     RETURNS TABLE (
         id uuid,
@@ -453,7 +459,6 @@ END;
 $$;
 
 ----- returns id, first_name, last_name of top most loyal buyer
------ NOT TESTED YET
 CREATE OR REPLACE FUNCTION transactions.Most_Loyal_Buyer ()
     RETURNS TABLE (
         id uuid,
@@ -483,6 +488,158 @@ BEGIN
                 COUNT(buyer_id) DESC
                 --- change limits when wanting to show more sellers
             LIMIT 1) AS best_buyer ON p.id = best_buyer.buyer_id;
+END;
+$$;
+
+---------------------------------------------------------------
+----------------------- Per_User_Reports ----------------------
+-----------------Description; handles favorite flavors,
+-- ---------------------------recent activity, recent transactions
+-------------------------------------------------------------------
+--------------------------------------------------------------
+---------- RECENT TRANNSACTIONS ------------------------------
+------------ pass user id and get his recent transactions -------
+CREATE OR REPLACE FUNCTION transactions.Recent_Transactions ()
+    RETURNS TABLE (
+        transaction_type text,
+        transaction_amount DECIMAL(10, 2),
+        transaction_date timestamp,
+        -- can be null if transaction is Deposit
+        product_name varchar(255))
+    LANGUAGE plpgsql
+    SECURITY DEFINER
+    AS $$
+DECLARE
+    current_id uuid := auth.uid ();
+BEGIN
+    RETURN QUERY
+    -- DESC: Query Bought & Sold Products by User
+    SELECT
+        CASE
+        -- purchase by USER, leads to a deduction in his account balance
+        WHEN t.buyer_id = current_ID THEN
+            'purchase'
+            -- sold by User, leads to an addition to his acc balance
+        WHEN t.seller_id = current_ID THEN
+            'sold'
+        END AS transaction_type,
+        t.amount,
+        t.created_at,
+        l.title AS product_name
+    FROM
+        transactions.transactions t
+        JOIN listings.listings l ON t.listing_id = l.id
+    WHERE
+        t.buyer_id = current_ID
+        OR t.seller_id = current_ID
+    UNION
+    -- New Deposits by USER
+    SELECT
+        'Depositted' AS activity_type,
+        d.amount,
+        d.created_at,
+        NULL AS product_name
+    FROM
+        transactions.deposits d
+    WHERE
+        d.user_id = current_ID
+    ORDER BY
+        created_at DESC
+        --  can be changed to show more
+    LIMIT 5;
+END;
+$$;
+
+------------------------------------------------------
+----------- RECENT ACTIVITY --------------------------
+CREATE OR REPLACE FUNCTION transactions.Recent_Activity ()
+    RETURNS TABLE (
+        activity_type text,
+        activity_amount DECIMAL(10, 2),
+        activity_date timestamp,
+        -- can be null if activity is Deposit
+        product_name varchar(255))
+    LANGUAGE plpgsql
+    SECURITY DEFINER
+    AS $$
+DECLARE
+    current_id uuid := auth.uid ();
+BEGIN
+    RETURN QUERY
+    -- Recently Bought Products by User
+    SELECT
+        -- purchase by USER, leads to a deduction in his account balance
+        'purchase' AS activity_type,
+        t.amount,
+        t.created_at,
+        l.title AS product_name
+    FROM
+        transactions.transactions t
+        JOIN listings.listings l ON t.listing_id = l.id
+    WHERE
+        t.buyer_id = current_id
+    UNION
+    -- New Listings By User
+    SELECT
+        'Added Listing' AS activity_type,
+        l.price,
+        l.created_at,
+        l.title AS product_name
+    FROM
+        listings.listings l
+    WHERE
+        l.seller_id = current_id
+    UNION
+    -- New Deposits by USER
+    SELECT
+        'Deposit' AS activity_type,
+        d.amount,
+        d.created_at,
+        NULL AS product_name
+    FROM
+        transactions.deposits d
+    WHERE
+        d.user_id = current_id
+    ORDER BY
+        created_at DESC
+    LIMIT 5;
+END;
+$$;
+
+---------------------------------------------------------------------
+------------ Favorite Flavors ---------------------------------------
+---------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION transactions.favorite_flavours ()
+    RETURNS TABLE (
+        product_name varchar(255),
+        product_description text,
+        product_category listings.category_type)
+    LANGUAGE plpgsql
+    SECURITY DEFINER
+    AS $$
+DECLARE
+    current_id uuid := auth.uid ();
+BEGIN
+    RETURN QUERY
+    -- Most bought products by user
+    SELECT
+        l.title,
+        l.description,
+        l.category
+    FROM
+        transactions.transactions t
+        JOIN listings.listings l ON t.listing_id = l.id
+    WHERE
+        t.buyer_id = current_id
+    GROUP BY
+        t.buyer_id,
+        l.title,
+        l.description,
+        l.category
+    ORDER BY
+        COUNT(t.buyer_id) DESC
+        -- Only return top 2 flavors
+    LIMIT 2;
 END;
 $$;
 
