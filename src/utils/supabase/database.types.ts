@@ -313,9 +313,45 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      best_selling: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          id: number;
+          title: string;
+          seller_id: string;
+          category: Database["listings"]["Enums"]["category_type"];
+          sales_count: number;
+        }[];
+      };
+      best_selling_seller: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          id: string;
+          first_name: string;
+          last_name: string;
+          sales_count: number;
+        }[];
+      };
       deposit: {
         Args: { amount: number };
         Returns: number;
+      };
+      favorite_flavours: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          product_name: string;
+          product_description: string;
+          product_category: Database["listings"]["Enums"]["category_type"];
+        }[];
+      };
+      most_loyal_buyer: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          id: string;
+          first_name: string;
+          last_name: string;
+          sales_count: number;
+        }[];
       };
       purchase: {
         Args: {
@@ -323,6 +359,24 @@ export type Database = {
           listing_category: Database["listings"]["Enums"]["category_type"];
         };
         Returns: undefined;
+      };
+      recent_activity: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          activity_type: string;
+          activity_amount: number;
+          activity_date: string;
+          product_name: string;
+        }[];
+      };
+      recent_transactions: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          transaction_type: string;
+          transaction_amount: number;
+          transaction_date: string;
+          product_name: string;
+        }[];
       };
     };
     Enums: {
