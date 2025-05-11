@@ -23,6 +23,7 @@ import supabase from "@/utils/supabase/client";
 import type { Database } from "@/utils/supabase/database.types";
 import { useQuery } from "@tanstack/react-query";
 import { Filter } from "lucide-react";
+import Form from "next/form";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -124,7 +125,7 @@ export default function BrowsePage() {
         {/* Flavours Grid */}
         <div className="flex-1 space-y-6">
           <div className="flex items-center gap-4">
-            <form className="flex gap-2 w-full max-w-md" action="/browse">
+            <Form className="flex gap-2 w-full max-w-md" action="/browse">
               <Input
                 name="q"
                 placeholder="Search flavours..."
@@ -132,7 +133,7 @@ export default function BrowsePage() {
                 aria-label="Search flavours"
               />
               <Button aria-label="Search">Search</Button>
-            </form>
+            </Form>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
