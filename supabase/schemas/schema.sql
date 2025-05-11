@@ -395,7 +395,6 @@ $$;
 ------------------ REPORT FUNCTIONS ----------------------------
 ----------------------------------------------------------------
 -- get ID , title, seller_id ,category of best selling product
--- THIS IS NOT TESTED YET
 CREATE OR REPLACE FUNCTION transactions.best_selling ()
 -- Returns information about the best-selling listing
     RETURNS TABLE (
