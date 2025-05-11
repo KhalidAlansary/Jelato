@@ -100,7 +100,7 @@ export default function ProfilePage() {
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="listings">My Listings</TabsTrigger>
               <TabsTrigger value="activity">Activity</TabsTrigger>
-              <TabsTrigger value="favorites">Favorites</TabsTrigger>
+              <TabsTrigger value="favourites">Favourites</TabsTrigger>
               <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
 
@@ -253,12 +253,12 @@ export default function ProfilePage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="favorites" className="mt-6">
+            <TabsContent value="favourites" className="mt-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <IceCream className="h-5 w-5" />
-                    Favorite Flavours
+                    Favourite Flavours
                   </CardTitle>
                 </CardHeader>
                 <CardContent>

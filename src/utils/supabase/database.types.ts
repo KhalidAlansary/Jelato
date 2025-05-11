@@ -336,7 +336,7 @@ export type Database = {
         Args: { amount: number };
         Returns: number;
       };
-      favorite_flavours: {
+      favourite_flavours: {
         Args: Record<PropertyKey, never>;
         Returns: {
           product_name: string;

@@ -493,7 +493,7 @@ $$;
 
 ---------------------------------------------------------------
 ----------------------- Per_User_Reports ----------------------
------------------Description; handles favorite flavors,
+-----------------Description; handles fovourite flavors,
 -- ---------------------------recent activity, recent transactions
 -------------------------------------------------------------------
 --------------------------------------------------------------
@@ -607,9 +607,9 @@ END;
 $$;
 
 ---------------------------------------------------------------------
------------- Favorite Flavors ---------------------------------------
+------------ Favourite Flavors ---------------------------------------
 ---------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION transactions.favorite_flavours ()
+CREATE OR REPLACE FUNCTION transactions.fovourite_flavours ()
     RETURNS TABLE (
         product_name varchar(255),
         product_description text,
