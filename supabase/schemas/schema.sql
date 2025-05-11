@@ -627,15 +627,17 @@ $$;
 ---------------------------------------------------------------------
 ------------ Favorite Flavors ---------------------------------------
 ---------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION transactions.favorite_flavours(
-    user_ID uuid
-) RETURNS TABLE(
+CREATE OR REPLACE FUNCTION transactions.favorite_flavours() 
+RETURNS TABLE(
     product_name VARCHAR(255),
     product_description TEXT,
     product_category listings.category_type
 )
     LANGUAGE plpgsql
+    SECURITY DEFINER
     AS $$
+DECLARE 
+    current_id UUID := auth.uid();
 BEGIN
     RETURN QUERY
     
@@ -649,7 +651,7 @@ BEGIN
     JOIN
         listings.listings l ON t.listing_id=l.id
     WHERE
-        t.buyer_id=user_ID
+        t.buyer_id=current_id
     GROUP BY
       t.buyer_id, l.title, l.description, l.category
     ORDER BY 
