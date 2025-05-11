@@ -33,6 +33,7 @@ export default function WalletPage() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<FormFields>({
     resolver: zodResolver(schema),
@@ -66,7 +67,7 @@ export default function WalletPage() {
     error: transactionsError,
     isLoading: transactionsIsLoading,
   } = useQuery({
-    queryKey: ["transactions", user],
+    queryKey: ["recentTransactions", user],
     queryFn: async () => {
       if (!user) return [];
       const { data, error } = await supabase
@@ -87,6 +88,8 @@ export default function WalletPage() {
       console.error("Error depositing funds:", error);
     } else {
       queryClient.setQueryData(["balance", user], newBalance);
+      queryClient.invalidateQueries({ queryKey: ["recentTransactions", user] });
+      reset();
     }
   }
 
