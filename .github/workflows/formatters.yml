@@ -25,3 +25,19 @@ jobs:
       - name: Run Prettier
         id: prettier-run
         run: pnpm exec prettier --check .
+  pgFormatter:
+    name: pgFormatter Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install pgFormatter
+        run: sudo apt install -y pgformatter
+
+      - name: Check SQL formatting
+        run: |
+          find . -type f -name '*.sql' | while read file; do
+            echo "Checking $file"
+            diff -u "$file" <(pg_format "$file") || exit 1
+          done
