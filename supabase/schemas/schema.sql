@@ -1,7 +1,7 @@
 -- =========================
 -- 1. Profiles Schema
 -- =========================
-CREATE TABLE profiles(
+CREATE TABLE profiles (
     id uuid NOT NULL PRIMARY KEY REFERENCES auth.users ON DELETE CASCADE,
     first_name varchar(50) NOT NULL,
     last_name varchar(50) NOT NULL,
@@ -18,20 +18,20 @@ CREATE POLICY "Users can update their own profiles" ON profiles
     FOR UPDATE
         USING ((
             SELECT
-                auth.uid()) = id)
+                auth.uid ()) = id)
             WITH CHECK ((
                 SELECT
-                    auth.uid()) = id);
+                    auth.uid ()) = id);
 
-CREATE FUNCTION create_profile()
+CREATE FUNCTION create_profile ()
     RETURNS TRIGGER
     LANGUAGE plpgsql
     SECURITY DEFINER
     SET search_path = public
     AS $$
 BEGIN
-    INSERT INTO profiles(id, first_name, last_name)
-        VALUES(NEW.id, NEW.raw_user_meta_data ->> 'firstName', NEW.raw_user_meta_data ->> 'lastName');
+    INSERT INTO profiles (id, first_name, last_name)
+        VALUES (NEW.id, NEW.raw_user_meta_data ->> 'firstName', NEW.raw_user_meta_data ->> 'lastName');
     RETURN NEW;
 END;
 $$;
@@ -39,7 +39,7 @@ $$;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW
-    EXECUTE PROCEDURE create_profile();
+    EXECUTE PROCEDURE create_profile ();
 
 -- =========================
 -- 2. Listings Schema
@@ -61,16 +61,16 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA listings GRANT ALL ON ROUTI
 
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA listings GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
 
-CREATE TYPE listings.category_type AS ENUM(
+CREATE TYPE listings.category_type AS ENUM (
     'chocolate',
     'fruity',
     'tropical',
     'caramel'
 );
 
-CREATE TABLE listings.listings(
+CREATE TABLE listings.listings (
     id serial,
-    seller_id uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+    seller_id uuid NOT NULL REFERENCES profiles (id) ON DELETE CASCADE,
     title varchar(255) NOT NULL,
     description text,
     category listings.category_type NOT NULL,
@@ -93,22 +93,22 @@ CREATE POLICY "Users can create their own listings" ON listings.listings
     FOR INSERT
         WITH CHECK ((
             SELECT
-                auth.uid()) = seller_id);
+                auth.uid ()) = seller_id);
 
 CREATE POLICY "Users can update their own listings" ON listings.listings
     FOR UPDATE
         USING ((
             SELECT
-                auth.uid()) = seller_id)
+                auth.uid ()) = seller_id)
             WITH CHECK ((
                 SELECT
-                    auth.uid()) = seller_id);
+                    auth.uid ()) = seller_id);
 
 CREATE POLICY "Users can delete their own listings" ON listings.listings
     FOR DELETE
         USING ((
             SELECT
-                auth.uid()) = seller_id);
+                auth.uid ()) = seller_id);
 
 CREATE TABLE listings.listings_chocolate PARTITION OF listings.listings
 FOR VALUES IN ('chocolate');
@@ -123,22 +123,22 @@ CREATE POLICY "Users can create their own chocolate listings" ON listings.listin
     FOR INSERT
         WITH CHECK ((
             SELECT
-                auth.uid()) = seller_id);
+                auth.uid ()) = seller_id);
 
 CREATE POLICY "Users can update their own chocolate listings" ON listings.listings_chocolate
     FOR UPDATE
         USING ((
             SELECT
-                auth.uid()) = seller_id)
+                auth.uid ()) = seller_id)
             WITH CHECK ((
                 SELECT
-                    auth.uid()) = seller_id);
+                    auth.uid ()) = seller_id);
 
 CREATE POLICY "Users can delete their own chocolate listings" ON listings.listings_chocolate
     FOR DELETE
         USING ((
             SELECT
-                auth.uid()) = seller_id);
+                auth.uid ()) = seller_id);
 
 CREATE TABLE listings.listings_fruity PARTITION OF listings.listings
 FOR VALUES IN ('fruity');
@@ -153,22 +153,22 @@ CREATE POLICY "Users can create their own fruity listings" ON listings.listings_
     FOR INSERT
         WITH CHECK ((
             SELECT
-                auth.uid()) = seller_id);
+                auth.uid ()) = seller_id);
 
 CREATE POLICY "Users can update their own fruity listings" ON listings.listings_fruity
     FOR UPDATE
         USING ((
             SELECT
-                auth.uid()) = seller_id)
+                auth.uid ()) = seller_id)
             WITH CHECK ((
                 SELECT
-                    auth.uid()) = seller_id);
+                    auth.uid ()) = seller_id);
 
 CREATE POLICY "Users can delete their own fruity listings" ON listings.listings_fruity
     FOR DELETE
         USING ((
             SELECT
-                auth.uid()) = seller_id);
+                auth.uid ()) = seller_id);
 
 CREATE TABLE listings.listings_tropical PARTITION OF listings.listings
 FOR VALUES IN ('tropical');
@@ -183,22 +183,22 @@ CREATE POLICY "Users can create their own tropical listings" ON listings.listing
     FOR INSERT
         WITH CHECK ((
             SELECT
-                auth.uid()) = seller_id);
+                auth.uid ()) = seller_id);
 
 CREATE POLICY "Users can update their own tropical listings" ON listings.listings_tropical
     FOR UPDATE
         USING ((
             SELECT
-                auth.uid()) = seller_id)
+                auth.uid ()) = seller_id)
             WITH CHECK ((
                 SELECT
-                    auth.uid()) = seller_id);
+                    auth.uid ()) = seller_id);
 
 CREATE POLICY "Users can delete their own tropical listings" ON listings.listings_tropical
     FOR DELETE
         USING ((
             SELECT
-                auth.uid()) = seller_id);
+                auth.uid ()) = seller_id);
 
 CREATE TABLE listings.listings_caramel PARTITION OF listings.listings
 FOR VALUES IN ('caramel');
@@ -213,22 +213,22 @@ CREATE POLICY "Users can create their own caramel listings" ON listings.listings
     FOR INSERT
         WITH CHECK ((
             SELECT
-                auth.uid()) = seller_id);
+                auth.uid ()) = seller_id);
 
 CREATE POLICY "Users can update their own caramel listings" ON listings.listings_caramel
     FOR UPDATE
         USING ((
             SELECT
-                auth.uid()) = seller_id)
+                auth.uid ()) = seller_id)
             WITH CHECK ((
                 SELECT
-                    auth.uid()) = seller_id);
+                    auth.uid ()) = seller_id);
 
 CREATE POLICY "Users can delete their own caramel listings" ON listings.listings_caramel
     FOR DELETE
         USING ((
             SELECT
-                auth.uid()) = seller_id);
+                auth.uid ()) = seller_id);
 
 -- =========================
 -- 3. Transactions Schema
@@ -250,20 +250,20 @@ ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA transactions GRANT ALL ON R
 
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA transactions GRANT ALL ON SEQUENCES TO anon, authenticated, service_role;
 
-CREATE TABLE transactions.transactions(
+CREATE TABLE transactions.transactions (
     id serial PRIMARY KEY,
-    buyer_id uuid REFERENCES profiles(id) ON DELETE SET NULL,
-    seller_id uuid REFERENCES profiles(id) ON DELETE SET NULL,
+    buyer_id uuid REFERENCES profiles (id) ON DELETE SET NULL,
+    seller_id uuid REFERENCES profiles (id) ON DELETE SET NULL,
     listing_id int NOT NULL,
     listing_category listings.category_type NOT NULL,
-    FOREIGN KEY (listing_id, listing_category) REFERENCES listings.listings(id, category),
+    FOREIGN KEY (listing_id, listing_category) REFERENCES listings.listings (id, category),
     amount DECIMAL(10, 2) NOT NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE transactions.transactions ENABLE ROW LEVEL SECURITY;
 
-CREATE FUNCTION transactions.purchase(listing_id int, listing_category listings.category_type)
+CREATE FUNCTION transactions.purchase (listing_id int, listing_category listings.category_type)
     RETURNS void
     AS $$
 DECLARE
@@ -274,7 +274,7 @@ DECLARE
 BEGIN
     BEGIN
         SELECT
-            auth.uid() INTO buyer_id;
+            auth.uid () INTO buyer_id;
         IF buyer_id IS NULL THEN
             RAISE EXCEPTION 'Buyer not found';
         END IF;
@@ -332,7 +332,7 @@ BEGIN
         WHERE
             id = listing_id
             AND category = listing_category;
-        INSERT INTO transactions.transactions(buyer_id, seller_id, listing_id, listing_category, amount)
+        INSERT INTO transactions.transactions (buyer_id, seller_id, listing_id, listing_category, amount)
             VALUES (buyer_id, listing_seller_id, listing_id, listing_category, listing_price);
     EXCEPTION
         WHEN OTHERS THEN
@@ -349,16 +349,16 @@ REVOKE EXECUTE ON FUNCTION transactions.purchase FROM public;
 
 REVOKE EXECUTE ON FUNCTION transactions.purchase FROM anon;
 
-CREATE TABLE transactions.deposits(
+CREATE TABLE transactions.deposits (
     id serial PRIMARY KEY,
-    user_id uuid REFERENCES profiles(id) ON DELETE SET NULL,
+    user_id uuid REFERENCES profiles (id) ON DELETE SET NULL,
     amount DECIMAL(10, 2) NOT NULL,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
 ALTER TABLE transactions.deposits ENABLE ROW LEVEL SECURITY;
 
-CREATE FUNCTION transactions.deposit(amount DECIMAL(10, 2))
+CREATE FUNCTION transactions.deposit (amount DECIMAL(10, 2))
     RETURNS DECIMAL (
         10, 2)
     LANGUAGE plpgsql
@@ -366,7 +366,7 @@ CREATE FUNCTION transactions.deposit(amount DECIMAL(10, 2))
     AS $$
 DECLARE
     new_balance DECIMAL(10, 2);
-    current_id uuid := auth.uid();
+    current_id uuid := auth.uid ();
 BEGIN
     UPDATE
         profiles
@@ -377,7 +377,7 @@ BEGIN
     RETURNING
         balance INTO new_balance;
     -- update deposits table
-    INSERT INTO transactions.deposits(user_id, amount)
+    INSERT INTO transactions.deposits (user_id, amount)
         VALUES (current_id, amount);
     RETURN new_balance;
 END;
@@ -387,9 +387,9 @@ $$;
 ------------------ REPORT FUNCTIONS ----------------------------
 ----------------------------------------------------------------
 -- get ID , title, seller_id ,category of best selling product
-CREATE OR REPLACE FUNCTION transactions.best_selling()
+CREATE OR REPLACE FUNCTION transactions.best_selling ()
 -- Returns information about the best-selling listing
-    RETURNS TABLE(
+    RETURNS TABLE (
         id int,
         title varchar(255),
         seller_id uuid,
@@ -407,7 +407,7 @@ BEGIN
         top_sales.sales_count
     FROM
         listings.listings l
-        JOIN(
+        JOIN (
             SELECT
                 listing_id,
                 COUNT(*) AS sales_count
@@ -426,8 +426,8 @@ END;
 $$;
 
 ----- returns id, first_name, last_name of top best selling Seller
-CREATE OR REPLACE FUNCTION transactions.Best_Selling_Seller()
-    RETURNS TABLE(
+CREATE OR REPLACE FUNCTION transactions.Best_Selling_Seller ()
+    RETURNS TABLE (
         id uuid,
         first_name varchar(50),
         last_name varchar(50),
@@ -443,7 +443,7 @@ BEGIN
         top_seller_user.sales_count
     FROM
         public.profiles p
-        JOIN(
+        JOIN (
             SELECT
                 seller_id,
                 COUNT(seller_id) AS sales_count
@@ -459,8 +459,8 @@ END;
 $$;
 
 ----- returns id, first_name, last_name of top most loyal buyer
-CREATE OR REPLACE FUNCTION transactions.Most_Loyal_Buyer()
-    RETURNS TABLE(
+CREATE OR REPLACE FUNCTION transactions.Most_Loyal_Buyer ()
+    RETURNS TABLE (
         id uuid,
         first_name varchar(50),
         last_name varchar(50),
@@ -476,7 +476,7 @@ BEGIN
         best_buyer.sales_count
     FROM
         public.profiles p
-        JOIN(
+        JOIN (
             SELECT
                 buyer_id,
                 COUNT(buyer_id) AS sales_count
@@ -499,8 +499,8 @@ $$;
 --------------------------------------------------------------
 ---------- RECENT TRANNSACTIONS ------------------------------
 ------------ pass user id and get his recent transactions -------
-CREATE OR REPLACE FUNCTION transactions.Recent_Transactions()
-    RETURNS TABLE(
+CREATE OR REPLACE FUNCTION transactions.Recent_Transactions ()
+    RETURNS TABLE (
         transaction_type text,
         transaction_amount DECIMAL(10, 2),
         transaction_date timestamp,
@@ -510,7 +510,7 @@ CREATE OR REPLACE FUNCTION transactions.Recent_Transactions()
     SECURITY DEFINER
     AS $$
 DECLARE
-    current_id uuid := auth.uid();
+    current_id uuid := auth.uid ();
 BEGIN
     RETURN QUERY
     -- DESC: Query Bought & Sold Products by User
@@ -552,8 +552,8 @@ $$;
 
 ------------------------------------------------------
 ----------- RECENT ACTIVITY --------------------------
-CREATE OR REPLACE FUNCTION transactions.Recent_Activity()
-    RETURNS TABLE(
+CREATE OR REPLACE FUNCTION transactions.Recent_Activity ()
+    RETURNS TABLE (
         activity_type text,
         activity_amount DECIMAL(10, 2),
         activity_date timestamp,
@@ -563,7 +563,7 @@ CREATE OR REPLACE FUNCTION transactions.Recent_Activity()
     SECURITY DEFINER
     AS $$
 DECLARE
-    current_id uuid := auth.uid();
+    current_id uuid := auth.uid ();
 BEGIN
     RETURN QUERY
     -- Recently Bought Products by User
@@ -609,8 +609,8 @@ $$;
 ---------------------------------------------------------------------
 ------------ Favorite Flavors ---------------------------------------
 ---------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION transactions.favorite_flavours()
-    RETURNS TABLE(
+CREATE OR REPLACE FUNCTION transactions.favorite_flavours ()
+    RETURNS TABLE (
         product_name varchar(255),
         product_description text,
         product_category listings.category_type)
@@ -618,7 +618,7 @@ CREATE OR REPLACE FUNCTION transactions.favorite_flavours()
     SECURITY DEFINER
     AS $$
 DECLARE
-    current_id uuid := auth.uid();
+    current_id uuid := auth.uid ();
 BEGIN
     RETURN QUERY
     -- Most bought products by user
