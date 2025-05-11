@@ -516,9 +516,9 @@ BEGIN
     -- DESC: Query Bought & Sold Products by User
     SELECT
         CASE
-        -- bought by USER, leads to a deduction in his account balance
+        -- purchase by USER, leads to a deduction in his account balance
         WHEN t.buyer_id = current_ID THEN
-            'bought'
+            'purchase'
             -- sold by User, leads to an addition to his acc balance
         WHEN t.seller_id = current_ID THEN
             'sold'
@@ -568,8 +568,8 @@ BEGIN
     RETURN QUERY
     -- Recently Bought Products by User
     SELECT
-        -- bought by USER, leads to a deduction in his account balance
-        'bought' AS activity_type,
+        -- purchase by USER, leads to a deduction in his account balance
+        'purchase' AS activity_type,
         t.amount,
         t.created_at,
         l.title AS product_name
@@ -592,7 +592,7 @@ BEGIN
     UNION
     -- New Deposits by USER
     SELECT
-        'Depositted' AS activity_type,
+        'Deposit' AS activity_type,
         d.amount,
         d.created_at,
         NULL AS product_name
