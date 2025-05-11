@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
 import supabase from "@/utils/supabase/client";
+import { SiGithub } from "@icons-pack/react-simple-icons";
 import {
   Menu,
   Search,
@@ -154,6 +155,17 @@ export function Navigation() {
             </>
           )}
           <ModeToggle />
+          <Link
+            href="https://github.com/KhalidAlansary/Jelato"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-2"
+          >
+            <Button variant="ghost" className="hidden md:flex">
+              <SiGithub className="mr-2 h-5 w-5" />
+              View Source
+            </Button>
+          </Link>
         </div>
       </div>
     </header>
