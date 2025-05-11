@@ -32,7 +32,31 @@ export default function ProfilePage() {
     },
   );
 
-  const { data: listings, isLoading } = useQuery({
+  const { data: recentActivity, error: recentActivityError } = useQuery({
+    queryKey: ["recentActivity"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .schema("transactions")
+        .rpc("recent_activity");
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: favouriteFlavours, error: favouriteflavoursError } = useQuery({
+    queryKey: ["favouriteFlavours"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .schema("transactions")
+        .rpc("favourite_flavours");
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: listings, isLoading: isLoadingListings } = useQuery({
     queryKey: ["user-listings", user?.id],
     queryFn: async () => {
       if (!user?.id) throw new Error("User not authenticated");
@@ -113,7 +137,7 @@ export default function ProfilePage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {isLoading ? (
+                  {isLoadingListings ? (
                     <div className="space-y-4">
                       {[1, 2, 3].map((i) => (
                         <div key={i} className="animate-pulse">
@@ -223,31 +247,57 @@ export default function ProfilePage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      {/* Activity Items */}
-                      <div className="flex justify-between items-center py-2 border-b">
-                        <div>
-                          <p className="font-medium">
-                            Purchased &quot;Choco Lava Delight&quot;
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            2 days ago
-                          </p>
-                        </div>
-                        <Badge>$5.99</Badge>
+                    {recentActivityError ? (
+                      <p className="text-destructive">
+                        Failed to load recent activity
+                      </p>
+                    ) : !recentActivity ? (
+                      <div className="space-y-4">
+                        {[1, 2, 3].map((i) => (
+                          <div key={i} className="animate-pulse">
+                            <div className="h-12 bg-muted rounded-lg" />
+                          </div>
+                        ))}
                       </div>
-                      <div className="flex justify-between items-center py-2 border-b">
-                        <div>
-                          <p className="font-medium">
-                            Reviewed &quot;Berry Bliss&quot;
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            5 days ago
-                          </p>
-                        </div>
-                        <Badge>5 Stars</Badge>
+                    ) : recentActivity.length === 0 ? (
+                      <p className="text-muted-foreground text-center py-4">
+                        No recent activity
+                      </p>
+                    ) : (
+                      <div className="space-y-4">
+                        {recentActivity.map((activity, index) => (
+                          <div
+                            key={index}
+                            className="flex justify-between items-center py-2 border-b"
+                          >
+                            <div>
+                              <p className="font-medium">
+                                {activity.activity_type === "purchase" &&
+                                  "Purchased "}
+                                {activity.activity_type === "Added Listing" &&
+                                  "Added new listing "}
+                                {activity.activity_type === "Deposit" &&
+                                  "Deposited "}
+                                {activity.product_name &&
+                                  `"${activity.product_name}"`}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {new Date(
+                                  activity.activity_date,
+                                ).toLocaleDateString("en-US", {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                })}
+                              </p>
+                            </div>
+                            <Badge>
+                              ${activity.activity_amount.toFixed(2)}
+                            </Badge>
+                          </div>
+                        ))}
                       </div>
-                    </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -262,26 +312,42 @@ export default function ProfilePage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center py-2 border-b">
-                      <div>
-                        <p className="font-medium">Choco Lava Delight</p>
-                        <p className="text-sm text-muted-foreground">
-                          Rich chocolate ice cream with a molten fudge core.
-                        </p>
-                      </div>
-                      <Badge>Chocolate</Badge>
+                  {favouriteflavoursError ? (
+                    <p className="text-destructive">
+                      Failed to load favourite flavours
+                    </p>
+                  ) : !favouriteFlavours ? (
+                    <div className="space-y-4">
+                      {[1, 2].map((i) => (
+                        <div key={i} className="animate-pulse">
+                          <div className="h-16 bg-muted rounded-lg" />
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b">
-                      <div>
-                        <p className="font-medium">Minty Wonderland</p>
-                        <p className="text-sm text-muted-foreground">
-                          Cool mint ice cream with dark chocolate chips.
-                        </p>
-                      </div>
-                      <Badge>Mint</Badge>
+                  ) : favouriteFlavours.length === 0 ? (
+                    <p className="text-muted-foreground text-center py-4">
+                      No favourite flavours yet
+                    </p>
+                  ) : (
+                    <div className="space-y-4">
+                      {favouriteFlavours.map((flavour, index) => (
+                        <div
+                          key={index}
+                          className="flex justify-between items-center py-2 border-b"
+                        >
+                          <div>
+                            <p className="font-medium">
+                              {flavour.product_name}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {flavour.product_description}
+                            </p>
+                          </div>
+                          <Badge>{flavour.product_category}</Badge>
+                        </div>
+                      ))}
                     </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

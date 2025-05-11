@@ -41,8 +41,8 @@ export default function WalletPage() {
   const queryClient = useQueryClient();
   const {
     data: balance,
-    isLoading,
-    error,
+    isLoading: balanceIsLoading,
+    error: balanceError,
   } = useQuery({
     queryKey: ["balance", user],
     queryFn: async () => {
@@ -57,9 +57,26 @@ export default function WalletPage() {
       return data?.balance ?? 0;
     },
   });
-  if (error) {
-    console.error("Error fetching balance:", error);
+  if (balanceError) {
+    console.error("Error fetching balance:", balanceError);
   }
+
+  const {
+    data: recentTransactions,
+    error: transactionsError,
+    isLoading: transactionsIsLoading,
+  } = useQuery({
+    queryKey: ["transactions", user],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .schema("transactions")
+        .rpc("recent_transactions");
+
+      if (error) throw error;
+      return data;
+    },
+  });
 
   async function deposit({ amount }: FormFields) {
     const { data: newBalance, error } = await supabase
@@ -73,7 +90,7 @@ export default function WalletPage() {
     }
   }
 
-  if (isLoading) {
+  if (balanceIsLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <p className="text-muted-foreground">Loading...</p>
@@ -160,90 +177,93 @@ export default function WalletPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {[
-                  {
-                    id: "tx1",
-                    type: "deposit",
-                    description: "Deposit to wallet",
-                    date: new Date(),
-                    amount: 1.25,
-                  },
-                  {
-                    id: "tx2",
-                    type: "purchase",
-                    description: "Purchase NFT #1234",
-                    date: new Date(Date.now() - 86400000),
-                    amount: 0.85,
-                  },
-                  {
-                    id: "tx3",
-                    type: "sale",
-                    description: "Sale of artwork",
-                    date: new Date(Date.now() - 172800000),
-                    amount: 2.5,
-                  },
-                ].map((transaction) => (
-                  <div
-                    key={transaction.id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
-                  >
-                    <div className="flex items-center gap-3">
-                      {transaction.type === "deposit" ? (
-                        <div className="bg-green-100 p-2 rounded-full">
-                          <ArrowUpRight className="h-5 w-5 text-green-600" />
+              {transactionsIsLoading ? (
+                <div className="text-center py-4">
+                  <p className="text-muted-foreground">
+                    Loading transactions...
+                  </p>
+                </div>
+              ) : transactionsError ? (
+                <div className="text-center py-4">
+                  <p className="text-destructive">Error loading transactions</p>
+                </div>
+              ) : recentTransactions?.length === 0 ? (
+                <div className="text-center py-4">
+                  <p className="text-muted-foreground">No transactions yet</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recentTransactions?.map((transaction, index) => (
+                    <div
+                      key={`${transaction.transaction_type}-${transaction.transaction_date}-${index}`}
+                      className="flex items-center justify-between p-4 border rounded-lg"
+                    >
+                      <div className="flex items-center gap-3">
+                        {transaction.transaction_type === "Depositted" ? (
+                          <div className="bg-green-100 p-2 rounded-full">
+                            <ArrowUpRight className="h-5 w-5 text-green-600" />
+                          </div>
+                        ) : transaction.transaction_type === "purchase" ? (
+                          <div className="bg-red-100 p-2 rounded-full">
+                            <ArrowDownLeft className="h-5 w-5 text-red-600" />
+                          </div>
+                        ) : (
+                          <div className="bg-blue-100 p-2 rounded-full">
+                            <ArrowUpRight className="h-5 w-5 text-blue-600" />
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-medium">
+                            {transaction.transaction_type === "Depositted"
+                              ? "Deposit to wallet"
+                              : transaction.product_name || "Transaction"}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {new Date(
+                              transaction.transaction_date,
+                            ).toLocaleDateString()}{" "}
+                            at{" "}
+                            {new Date(
+                              transaction.transaction_date,
+                            ).toLocaleTimeString()}
+                          </p>
                         </div>
-                      ) : transaction.type === "purchase" ? (
-                        <div className="bg-red-100 p-2 rounded-full">
-                          <ArrowDownLeft className="h-5 w-5 text-red-600" />
-                        </div>
-                      ) : (
-                        <div className="bg-blue-100 p-2 rounded-full">
-                          <ArrowUpRight className="h-5 w-5 text-blue-600" />
-                        </div>
-                      )}
-                      <div>
-                        <p className="font-medium">{transaction.description}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {transaction.date.toLocaleDateString()} at{" "}
-                          {transaction.date.toLocaleTimeString()}
-                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`font-bold ${
+                            transaction.transaction_type === "Depositted" ||
+                            transaction.transaction_type === "sold"
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {transaction.transaction_type === "Depositted" ||
+                          transaction.transaction_type === "sold"
+                            ? "+"
+                            : "-"}
+                          {transaction.transaction_amount.toFixed(2)} $
+                        </span>
+                        <Badge
+                          variant={
+                            transaction.transaction_type === "Depositted"
+                              ? "outline"
+                              : transaction.transaction_type === "purchase"
+                                ? "secondary"
+                                : "default"
+                          }
+                        >
+                          {transaction.transaction_type === "Depositted"
+                            ? "Deposit"
+                            : transaction.transaction_type === "purchase"
+                              ? "Purchase"
+                              : "Sale"}
+                        </Badge>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`font-bold ${
-                          transaction.type === "deposit" ||
-                          transaction.type === "sale"
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }`}
-                      >
-                        {transaction.type === "deposit" ||
-                        transaction.type === "sale"
-                          ? "+"
-                          : "-"}
-                        {transaction.amount.toFixed(2)} $
-                      </span>
-                      <Badge
-                        variant={
-                          transaction.type === "deposit"
-                            ? "outline"
-                            : transaction.type === "purchase"
-                              ? "secondary"
-                              : "default"
-                        }
-                      >
-                        {transaction.type === "deposit"
-                          ? "Deposit"
-                          : transaction.type === "purchase"
-                            ? "Purchase"
-                            : "Sale"}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
