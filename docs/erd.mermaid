@@ -1,0 +1,7 @@
+erDiagram "auth.users" { uuid id PK string email string password_hash timestamp created_at } profiles { uuid id PK,
+FK string first_name string last_name decimal balance } "listings.listings" { int id PK uuid seller_id FK string title text description enum category int stock decimal price string image_url timestamp created_at boolean is_active } "transactions.transactions" { int id PK uuid buyer_id FK uuid seller_id FK int listing_id FK enum listing_category FK decimal amount timestamp created_at } "transactions.deposits" { int id PK uuid user_id FK decimal amount timestamp created_at } "auth.users" || --o{ profiles : "has"
+profiles || --o{ "listings.listings" : "sells"
+profiles || --o{ "transactions.transactions" : "buys"
+profiles || --o{ "transactions.transactions" : "sells"
+profiles || --o{ "transactions.deposits" : "makes"
+"listings.listings" || --o{ "transactions.transactions" : "involved_in"
