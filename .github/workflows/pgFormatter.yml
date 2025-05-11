@@ -1,0 +1,24 @@
+name: Check SQL Formatting
+
+on:
+  pull_request:
+  push:
+    branches: master
+
+jobs:
+  check-formatting:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: install
+        run: sudo apt install -y pgformatter
+
+      - name: Check SQL formatting
+        run: |
+          find . -type f -name '*.sql' | while read file; do
+            echo "Checking $file"
+            diff -u "$file" <(pg_format "$file") || exit 1
+          done
