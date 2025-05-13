@@ -1,10 +1,24 @@
-# Jelato 🍦
+<h1 align='center'>
+  Jelato 🍦
+</h1>
 
-A modern ice cream marketplace built with Next.js, TypeScript, and Supabase. Browse, buy, and sell delicious ice cream products with a beautiful and responsive user interface.
+<p align='center'>
+  A modern ice cream marketplace built with Next.js, TypeScript, and Supabase. Browse, buy, and sell delicious ice cream products with a beautiful and responsive user interface.
+</p>
+
+<p align='center'>
+  <a href="https://nextjs.org/"><img alt="Next.JS" src="https://img.shields.io/badge/next%20js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" /></a>
+  &nbsp;
+  <a href="https://react.dev/"><img alt="React" src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" /></a>
+  &nbsp;
+  <a href="https://supabase.com/"><img alt="Supabase" src="https://img.shields.io/badge/Supabase-181818?style=for-the-badge&logo=supabase&logoColor=white" /></a>
+  &nbsp;
+  <a href="https://www.postgresql.org/"><img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" /></a>
+</p>
 
 ## Tech Stack
 
-- **Frontend Framework**: [Next.js](https://nextjs.org/) with [React](https://reactjs.org/)
+- **Frontend Framework**: [Next.js](https://nextjs.org/) with [React](https://react.dev/)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) with [shadcn/ui](https://ui.shadcn.com/) components
 - **Database & Backend**: [Supabase](https://supabase.com/) (PostgreSQL + Authentication)
