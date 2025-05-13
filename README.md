@@ -19,6 +19,10 @@ A modern ice cream marketplace built with Next.js, TypeScript, and Supabase. Bro
 - 🎨 Modern and responsive UI
 - 🔍 Search and sort functionality
 
+## Demo & Presentation
+
+https://youtu.be/9j4sUuqHPu4?si=MgoKM9mz9yoS5dW7
+
 ## Development
 
 ### Prerequisites
