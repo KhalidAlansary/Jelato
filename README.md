@@ -33,7 +33,7 @@ A modern ice cream marketplace built with Next.js, TypeScript, and Supabase. Bro
 
 ```sh
 git clone https://github.com/KhalidAlansary/Jelato.git
-cd jelato
+cd Jelato
 ```
 
 2. Install dependencies:
