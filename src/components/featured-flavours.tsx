@@ -55,7 +55,7 @@ export function FeaturedFlavours() {
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div>
-                    <Link href={`/product/${flavour.id}`}>
+                    <Link href={`/browse/${flavour.id}`}>
                       <CardTitle className="hover:text-primary transition-colors">
                         {flavour.title}
                       </CardTitle>
