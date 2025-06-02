@@ -271,75 +271,88 @@ DECLARE
     listing_seller_id uuid;
     listing_stock int;
     listing_price DECIMAL(10, 2);
+    buyer_balance DECIMAL(10, 2);
 BEGIN
-    BEGIN
-        SELECT
-            auth.uid () INTO buyer_id;
-        IF buyer_id IS NULL THEN
-            RAISE EXCEPTION 'Buyer not found';
-        END IF;
-        SELECT
-            seller_id,
-            stock,
-            price INTO listing_seller_id,
-            listing_stock,
-            listing_price
-        FROM
-            listings.listings
-        WHERE
-            id = listing_id
-            AND category = listing_category;
-        IF NOT FOUND THEN
-            RAISE EXCEPTION 'Listing not found';
-        END IF;
-        IF listing_stock <= 0 THEN
-            RAISE EXCEPTION 'Listing is out of stock';
-        END IF;
-        -- Deduct the amount from the buyer's balance
-        UPDATE
-            profiles
-        SET
-            balance = balance - listing_price
-        WHERE
-            id = buyer_id;
-        IF NOT FOUND THEN
-            RAISE EXCEPTION 'Buyer not found';
-        END IF;
-        IF (
-            SELECT
-                balance
-            FROM
-                profiles
-            WHERE
-                id = buyer_id) < 0 THEN
-            RAISE EXCEPTION 'Insufficient balance';
-        END IF;
-        -- Add the amount to the seller's balance
-        UPDATE
-            profiles
-        SET
-            balance = balance + listing_price
-        WHERE
-            id = listing_seller_id;
-        IF NOT FOUND THEN
-            RAISE EXCEPTION 'Seller not found';
-        END IF;
-        -- Update the stock of the listing
-        UPDATE
-            listings.listings
-        SET
-            stock = stock - 1
-        WHERE
-            id = listing_id
-            AND category = listing_category;
-        INSERT INTO transactions.transactions (buyer_id, seller_id, listing_id, listing_category, amount)
-            VALUES (buyer_id, listing_seller_id, listing_id, listing_category, listing_price);
-    EXCEPTION
-        WHEN OTHERS THEN
-            RAISE;
-    END;
+    -- Get current user as buyer
+    SELECT
+        auth.uid () INTO buyer_id;
+    IF buyer_id IS NULL THEN
+        RAISE EXCEPTION 'Buyer not found';
+    END IF;
+    -- Lock the listing row for update to prevent concurrent modifications
+    SELECT
+        seller_id,
+        stock,
+        price INTO listing_seller_id,
+        listing_stock,
+        listing_price
+    FROM
+        listings.listings
+    WHERE
+        id = listing_id
+        AND category = listing_category
+    FOR UPDATE;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Listing not found';
+    END IF;
+    IF listing_stock <= 0 THEN
+        RAISE EXCEPTION 'Listing is out of stock';
+    END IF;
+    -- Lock the buyer's profile row for update
+    SELECT
+        balance INTO buyer_balance
+    FROM
+        profiles
+    WHERE
+        id = buyer_id
+    FOR UPDATE;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Buyer not found (profile)';
+    END IF;
+    IF buyer_balance < listing_price THEN
+        RAISE EXCEPTION 'Insufficient balance';
+    END IF;
+    -- Raise an exception if buyer and seller are the same
+    IF listing_seller_id = buyer_id THEN
+        RAISE EXCEPTION 'Buyer and seller cannot be the same user';
+    END IF;
+    -- Lock the seller's profile row for update
+    PERFORM
+        1
+    FROM
+        profiles
+    WHERE
+        id = listing_seller_id
+    FOR UPDATE;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Seller not found (profile)';
+    END IF;
+    -- Deduct from buyer's balance
+    UPDATE
+        profiles
+    SET
+        balance = balance - listing_price
+    WHERE
+        id = buyer_id;
+    -- Add to seller's balance
+    UPDATE
+        profiles
+    SET
+        balance = balance + listing_price
+    WHERE
+        id = listing_seller_id;
+    -- Decrement listing stock
+    UPDATE
+        listings.listings
+    SET
+        stock = stock - 1
+    WHERE
+        id = listing_id
+        AND category = listing_category;
+    -- Insert transaction record
+    INSERT INTO transactions.transactions (buyer_id, seller_id, listing_id, listing_category, amount)
+        VALUES (buyer_id, listing_seller_id, listing_id, listing_category, listing_price);
 END;
-
 $$
 LANGUAGE plpgsql
 SECURITY DEFINER;
