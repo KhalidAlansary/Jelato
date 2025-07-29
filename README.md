@@ -71,18 +71,15 @@ pnpm dev
 ## Setting Up Your Own Project
 
 1. Create a new Supabase project:
-
    - Go to [database.new](https://database.new)
    - Sign up or log in to your Supabase account
    - Create a new project
 
 2. Set up the database:
-
    - Navigate to the SQL editor in your Supabase dashboard
    - Copy and run the contents of `supabase/schemas/schema.sql` to create all necessary tables
 
 3. Configure the project:
-
    - Update the Supabase project URL in `src/utils/supabase/client.ts`
    - Modify the project ID in `package.json` in the `gen-types` script to match your new Supabase project
 

@@ -23,7 +23,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const schema = z.object({
-  amount: z.coerce.number().min(0.01, "Amount must be greater than 0"),
+  amount: z.coerce.number<number>().min(0.01, "Amount must be greater than 0"),
 });
 
 type FormFields = z.infer<typeof schema>;
